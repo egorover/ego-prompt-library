@@ -1,0 +1,154 @@
+# Prompt Library CI — Level 4: Governed & Measured
+# Автоматическая валидация при PR и push в main
+
+name: Prompt CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "prompts/**"
+      - "scripts/**"
+      - "docs/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "prompts/**"
+      - "scripts/**"
+      - "docs/**"
+
+  # Ручной запуск для любого промпта
+  workflow_dispatch:
+    inputs:
+      prompt_name:
+        description: "Имя промпта для валидации (опционально)"
+        required: false
+        type: string
+
+jobs:
+  validate:
+    name: Validate Prompts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Run validation (all prompts)
+        run: |
+          python scripts/validate.py --strict --json > validation-results.json || true
+
+      - name: Upload validation results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-results
+          path: validation-results.json
+          retention-days: 30
+
+      - name: Human-readable output
+        run: |
+          python scripts/validate.py --strict
+        continue-on-error: true
+
+  metrics:
+    name: Collect Metrics
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run metrics collection
+        run: |
+          python scripts/metrics-collector.py --all
+
+      - name: Generate report
+        run: |
+          python scripts/report.py --output report.md
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: metrics-report
+          path: report.md
+          retention-days: 30
+
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: [validate]
+    if: always()
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download validation results
+        uses: actions/download-artifact@v4
+        with:
+          name: validation-results
+
+      - name: Evaluate quality gate
+        run: |
+          echo "=== Quality Gate Check ==="
+          STATUS=$(python -c "import json; data=json.load(open('validation-results.json')); print(data['status'])")
+          echo "Validation status: $STATUS"
+
+          if [ "$STATUS" = "pass" ]; then
+            echo "✅ Quality gate PASSED"
+          else
+            echo "❌ Quality gate FAILED"
+            exit 1
+          fi
+
+      - name: Comment on PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const result = JSON.parse(fs.readFileSync('validation-results.json', 'utf8'));
+
+            let comment = '## 🔍 Prompt Library Validation\n\n';
+
+            if (result.status === 'pass') {
+              comment += '✅ Все промпты прошли валидацию.\n';
+            } else {
+              comment += '❌ Обнаружены проблемы:\n\n';
+              for (const r of result.results) {
+                comment += `### ${r.prompt_dir}\n`;
+                if (r.errors.length > 0) {
+                  comment += '**Errors:**\n';
+                  r.errors.forEach(e => comment += `- ❌ ${e}\n`);
+                }
+                if (r.warnings.length > 0) {
+                  comment += '**Warnings:**\n';
+                  r.warnings.forEach(w => comment += `- ⚠️ ${w}\n`);
+                }
+                comment += '\n';
+              }
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

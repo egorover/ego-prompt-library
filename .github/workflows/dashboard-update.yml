@@ -1,0 +1,139 @@
+# Prompt Library — Automated Dashboard & Quarterly Review
+# Запускается: ежемесячно 1-го числа + quarterly review
+
+name: Dashboard Update
+
+on:
+  schedule:
+    # 1-е число каждого месяца в 09:00 UTC
+    - cron: '0 9 1 * *'
+  # Ручной запуск
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Режим запуска"
+        required: true
+        type: choice
+        options:
+          - dashboard
+          - quarterly
+          - full
+        default: "full"
+
+jobs:
+  update-dashboard:
+    name: Update Dashboards
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Collect metrics
+        run: |
+          python scripts/metrics-collector.py --all --dashboard --json > metrics-data.json
+
+      - name: Generate reports
+        run: |
+          python scripts/report.py --output report.md
+          python scripts/report.py --html --output dashboard.html
+          python scripts/report.py --json --output report.json
+
+      - name: Commit updated dashboards
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add prompts/*/metrics/dashboard.md
+          git add report.md dashboard.html report.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update dashboards and reports [skip ci]"
+            git push
+          fi
+
+  quarterly-review:
+    name: Quarterly Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event.inputs.mode == 'quarterly' || github.event.inputs.mode == 'full'
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate quarterly report
+        run: |
+          python scripts/report.py --output quarterly-report.md --html --output quarterly-dashboard.html
+
+      - name: Check for deprecated candidates
+        run: |
+          echo "=== Deprecated Candidates ==="
+          python -c "
+          import json, sys
+          from pathlib import Path
+          data = json.loads(Path('report.json').read_text())
+          for p in data['prompts']:
+              if p['status'] in ('draft', 'deprecated'):
+                  print(f\"  ⚠️  {p['name']}: {p['status']} (usage: {p['usage_count']})\")
+              elif p['usage_count'] == 0:
+                  print(f\"  ⚠️  {p['name']}: never used\")
+          "
+
+      - name: Check for stale prompts
+        run: |
+          echo "=== Stale Prompts Check ==="
+          python -c "
+          from datetime import datetime
+          from pathlib import Path
+          import re
+
+          for card in Path('prompts').glob('*/card.md'):
+              content = card.read_text()
+              for line in content.split('\n'):
+                  if '| Updated' in line or '| Обновлено' in line:
+                      match = re.search(r'(\d{4}-\d{2}-\d{2})', line)
+                      if match:
+                          updated = datetime.strptime(match.group(1), '%Y-%m-%d')
+                          days = (datetime.now() - updated).days
+                          if days > 90:
+                              print(f'  ⚠️  {card.parent.name}: last updated {days} days ago')
+          "
+
+      - name: Create review issue (if needed)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Quarterly Review — ${new Date().toISOString().slice(0, 7)}`,
+              body: `## Quarterly Review Required
+
+            Automated review detected issues that need attention.
+
+            See attached quarterly-report.md for details.
+
+            **Actions needed:**
+            - Review deprecated candidates
+            - Check stale prompts (90+ days without updates)
+            - Update metrics dashboards
+            - Verify test pass rates
+              `,
+              labels: ['quarterly-review', 'automation']
+            });

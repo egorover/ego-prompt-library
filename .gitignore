@@ -1,0 +1,34 @@
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
+
+# Python (для scripts/)
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Reports (генерируемые)
+report.md
+dashboard.html
+report.json
+metrics.json
+quarterly-report.md
+quarterly-dashboard.html
+
+# Secrets (на всякий случай)
+*.env
+
