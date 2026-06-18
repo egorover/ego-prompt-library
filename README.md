@@ -36,7 +36,7 @@
 | Quality gates в коде | ✅ Готово | report.py + ci-check.py |
 | **Quarterly Review** | ⚠️ Не проводился | Первый review запланировать на Q3 2026 |
 | **Deprecation process** | ⚠️ Не применялся | Нужен опыт использования (хотя бы один случай) |
-| **Production metrics** | ⚠️ Мало данных | qualityAvg = 0 для python-architect, 1 оценка у python-dev |
+| **Production metrics** | 🟢 Собраны | 3 оценки у python-architect (avg 4.7), 5 у python-dev (avg 4.8) |
 
 **Для получения ✅ — выполнить 4 шага:**
 

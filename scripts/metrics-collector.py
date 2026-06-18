@@ -157,10 +157,17 @@ def parse_quality(quality_content: str) -> tuple[float, int]:
     """Извлекает средний рейтинг качества."""
     ratings = []
     for line in quality_content.split('\n'):
-        # Формат: | 2026-06-18 | 5 | admin | ... | ...
-        match = re.match(r'\|\s*\d{4}-\d{2}-\d{2}\s*\|\s*(\d+)\s*\|', line)
-        if match:
-            rating = int(match.group(1))
+        # Формат 1: | 2026-06-18 | 5 | admin | ... (python-dev)
+        # Формат 2: | 2026-06-18 | admin | 5 | 5 | 5 | 5 | 5.0 | (python-architect)
+        match = re.match(r'\|\s*\d{4}-\d{2}-\d{2}\s*\|', line)
+        if not match:
+            continue
+        # Нашли строку с датой — извлекаем все числа из строки
+        numbers = re.findall(r'\|\s*(\d+)', line)
+        # Первое число после даты — это рейтинг (format 1)
+        # Или третье число (index 2) — это первое значение (relevance) (format 2)
+        if len(numbers) >= 2:
+            rating = int(numbers[1])  # второе число, первое — это часть даты
             if 1 <= rating <= 5:
                 ratings.append(rating)
     if not ratings:
