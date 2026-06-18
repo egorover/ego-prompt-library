@@ -1,20 +1,20 @@
-# Dashboard: python-architect
+# Dashboard: python-dev
 
 ## Summary (2026-06-18)
 
 | Метрика            | Значение | Статус | Тренд  |
 |--------------------|----------|--------|--------|
-| Usage count        | 2        | ⚪     | → рост      |
+| Usage count        | 1        | ⚪     | → рост      |
 | Test pass rate     | 100.0%     | 🟢     | → стаб |
 | Latency P50        | 0s       | 🟢     | —      |
 | Quality Avg        | —        | ⚪     | —      |
-| Changes (this mo)  | 2        | 🟢     | —      |
+| Changes (this mo)  | 3        | 🟡     | —      |
 | Open issues        | 0        | 🟢     | —      |
 
 ## Trend (последние 3 месяца)
 
 | Месяц    | Usage | Test% | Latency | Quality | Issues |
 |----------|-------|-------|---------|---------|--------|
-| 2026-06  | 2     | 100.0   | 0s      | —       | 0      |
+| 2026-06  | 1     | 100.0   | 0s      | —       | 0      |
 
 > 📌 Дашборд обновляется автоматически через CI.

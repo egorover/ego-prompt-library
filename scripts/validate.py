@@ -138,8 +138,9 @@ def validate_metadata(content: str) -> list[str]:
             errors.append(f"Missing metadata field: {field_name}")
 
     # Проверяем placeholder-значения
-    if "v1.0.0" in content or "YYYY-MM-DD" in content:
-        warnings.append("Metadata may contain placeholder values (v1.0.0, YYYY-MM-DD)")
+    # YYYY-MM-DD — реальный placeholder, v1.0.0 — допустимая первая версия
+    if "YYYY-MM-DD" in content:
+        warnings.append("Metadata may contain placeholder values (YYYY-MM-DD)")
 
     # Проверяем статус
     for status in VALID_STATUSES:

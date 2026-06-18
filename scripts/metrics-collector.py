@@ -125,13 +125,16 @@ def parse_latency(latency_content: str) -> tuple[float, float, float]:
     p95_values = []
     p99_values = []
 
+    # Ищем паттерн: <число>s ... <число>s ... <число>s
     for line in latency_content.split('\n'):
-        # Формат: | TC-001 | ... | 5s | 7s | 10s |
-        match = re.match(r'\|\s*\S+\s*\|\s*[^|]*\|\s*(\d+)s?\s*\|\s*(\d+)s?\s*\|\s*(\d+)s?\s*\|', line)
-        if match:
-            p50_values.append(int(match.group(1)))
-            p95_values.append(int(match.group(2)))
-            p99_values.append(int(match.group(3)))
+        if '|' not in line:
+            continue
+        # Ищем 3+ значения типа "5s" в строке
+        time_values = re.findall(r'(\d+)s', line)
+        if len(time_values) >= 3:
+            p50_values.append(int(time_values[0]))
+            p95_values.append(int(time_values[1]))
+            p99_values.append(int(time_values[2]))
 
     def percentile(values: list[int], p: float) -> float:
         if not values:
@@ -154,9 +157,12 @@ def parse_quality(quality_content: str) -> tuple[float, int]:
     """Извлекает средний рейтинг качества."""
     ratings = []
     for line in quality_content.split('\n'):
+        # Формат: | 2026-06-18 | 5 | admin | ... | ...
         match = re.match(r'\|\s*\d{4}-\d{2}-\d{2}\s*\|[^|]*\|\s*(\d+)\s*\|', line)
         if match:
-            ratings.append(int(match.group(1)))
+            rating = int(match.group(1))
+            if 1 <= rating <= 5:
+                ratings.append(rating)
     if not ratings:
         return 0.0, 0
     return round(sum(ratings) / len(ratings), 1), len(ratings)
