@@ -89,9 +89,9 @@ jobs:
           data = json.loads(Path('report.json').read_text())
           for p in data['prompts']:
               if p['status'] in ('draft', 'deprecated'):
-                  print(f\"  ⚠️  {p['name']}: {p['status']} (usage: {p['usage_count']})\")
+                  print(f'  [WARN] {p[\"name\"]}: {p[\"status\"]} (usage: {p[\"usage_count\"]})')
               elif p['usage_count'] == 0:
-                  print(f\"  ⚠️  {p['name']}: never used\")
+                  print(f'  [WARN] {p[\"name\"]}: never used')
           "
 
       - name: Check for stale prompts
@@ -111,7 +111,7 @@ jobs:
                           updated = datetime.strptime(match.group(1), '%Y-%m-%d')
                           days = (datetime.now() - updated).days
                           if days > 90:
-                              print(f'  ⚠️  {card.parent.name}: last updated {days} days ago')
+                              print(f'[WARN] {card.parent.name}: last updated {days} days ago')
           "
 
       - name: Create review issue (if needed)

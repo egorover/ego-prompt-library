@@ -271,7 +271,7 @@ def main():
     prompts = discover_prompts(library_root)
 
     if not prompts:
-        print("⚠️  No prompts found.")
+        print("[WARN] No prompts found.")
         sys.exit(0)
 
     # Собираем метрики
@@ -311,7 +311,7 @@ def main():
         output_str = json.dumps(output, indent=2, ensure_ascii=False)
         if args.output:
             Path(args.output).write_text(output_str, encoding="utf-8")
-            print(f"✅ JSON report written to {args.output}")
+            print(f"[OK] JSON report written to {args.output}")
         else:
             print(output_str)
         return
@@ -321,7 +321,7 @@ def main():
         html = generate_html_report(metrics_list, all_issues)
         if args.output:
             Path(args.output).write_text(html, encoding="utf-8")
-            print(f"✅ HTML report written to {args.output}")
+            print(f"[OK] HTML report written to {args.output}")
         else:
             print(html)
         return
@@ -358,7 +358,7 @@ def main():
 """
 
     for m in metrics_list:
-        md += f"### {m.name} (v{m.version}, {m.status})\n\n"
+        md += f"### {m.name} ({m.version}, {m.status})\n\n"
         md += f"| Метрика | Значение |\n|---------|----------|\n"
         md += f"| Test pass rate | {m.test_pass_rate}% |\n"
         md += f"| Latency P50 | {m.latency_p50}s |\n"
@@ -376,7 +376,7 @@ def main():
 
     if args.output:
         Path(args.output).write_text(md, encoding="utf-8")
-        print(f"✅ Report written to {args.output}")
+        print(f"[OK] Report written to {args.output}")
     else:
         print(md)
 

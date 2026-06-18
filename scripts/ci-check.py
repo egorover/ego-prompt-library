@@ -8,6 +8,10 @@ CI-скрипт для GitHub Actions.
 import sys
 from pathlib import Path
 
+# Fix console encoding for Windows
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8")
+
 # Добавляем scripts в path для импорта validate
 scripts_dir = Path(__file__).parent.parent / "scripts"
 sys.path.insert(0, str(scripts_dir))
@@ -20,7 +24,7 @@ def main():
     prompts = discover_prompts(library_root)
 
     if not prompts:
-        print("⚠️  No prompts found. Nothing to validate.")
+        print("[WARN] No prompts found. Nothing to validate.")
         sys.exit(0)
 
     all_passed = True
@@ -28,16 +32,16 @@ def main():
         result = validate_prompt(prompt_dir, strict=True)
         if not result.is_valid:
             all_passed = False
-            print(f"❌ {result.prompt_dir}")
+            print(f"[FAIL] {result.prompt_dir}")
             for error in result.errors:
                 print(f"   {error}")
             for warning in result.warnings:
-                print(f"   ⚠️  {warning}")
+                print(f"   [WARN] {warning}")
 
     if all_passed:
-        print(f"✅ All {len(prompts)} prompt(s) validated successfully.")
+        print(f"[OK] All {len(prompts)} prompt(s) validated successfully.")
     else:
-        print(f"\n❌ Validation failed for some prompts.")
+        print(f"\n[FAIL] Validation failed for some prompts.")
         sys.exit(1)
 
 

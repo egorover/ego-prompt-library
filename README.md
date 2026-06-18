@@ -1,11 +1,22 @@
 # Ego Prompt Library
 
-> Production-ready библиотека командных промптов с governance, тестами и CI.
-> Промпты управляются как код: code review, версионирование, метрики, депрекация.
+> Production-ready фреймворк для разработки, тестирования и управления AI prompt-ролями.
+> Промпты управляются как код: code review, версионирование, метрики, CI/CD.
 
-## Maturity Ladder
+## 🎯 Что это такое
 
-Эта библиотека спроектирована для достижения **уровня 4 (Governed & Measured)**:
+Это **универсальный фреймворк** для создания профессиональных AI-ролей. Не просто библиотека промптов — а полноценная система управления prompt-инструментами:
+
+- ✅ **Создание** — шаблоны и валидация для быстрой разработки новых ролей
+- ✅ **Тестирование** — регрессионные тесты для каждой роли
+- ✅ **Метрики** — usage, latency, quality, test pass rate
+- ✅ **CI/CD** — автоматическая проверка при каждом PR
+- ✅ **Governance** — процессы review, версионирование, депреция
+- ✅ **Отчётность** — dashboards, quality gates, тренды
+
+## 📊 Maturity Ladder
+
+Библиотека спроектирована для достижения **уровня 4 (Governed & Measured)**:
 
 | Уровень | Название | Статус |
 |---------|----------|--------|
@@ -14,8 +25,40 @@
 | 3. Library Asset | Элемент библиотеки | ✅ Пройден |
 | 4. Governed & Measured | Управляемый и контролируемый | 🟢 В процессе |
 
-## Структура
+## 🏗 Архитектура
 
+```
+ego-prompt-library/
+├── README.md                  # Этот файл
+├── .gitignore
+├── TEMPLATE_NEW_ROLE.md       # Шаблон добавления новой роли
+├── prompts/                   # Промпт-роли (production артефакты)
+│   └── python-architect/      # ← одна роль = одна директория
+│       ├── prompt.md          # Ядро роли (7 секций)
+│       ├── card.md            # Карточка роли (metadata, input/output, scope)
+│       ├── test-cases.md      # Тесты (TC + Edge Cases + Metrics)
+│       ├── changelog.md       # История изменений (SemVer)
+│       └── metrics/           # Метрики роли
+│           ├── dashboard.md   # Обзорная панель
+│           ├── usage.md       # Частота использования
+│           ├── quality.md     # Оценка качества (1-5)
+│           └── latency.md     # Время генерации
+├── docs/                      # Документация
+│   ├── playbook.md            # Руководство: создание, обновление, валидация
+│   ├── conventions.md         # Соглашения: форматирование, структуры, шаблоны
+│   ├── governance.md          # Управление: roles, PR, review, metrics, deprecation
+│   └── metrics.md             # Система метрик и dashboards
+├── templates/                 # Шаблоны для новых промптов
+│   ├── prompt-template.md
+│   ├── card-template.md
+│   ├── test-template.md
+│   └── changelog-template.md
+└── scripts/                   # Валидация, метрики, CI, отчёты
+    ├── validate.py            # CLI-валидатор структуры
+    ├── ci-check.py            # CI-скрипт для GitHub Actions
+    ├── metrics-collector.py   # Сбор метрик из всех ролей
+    ├── report.py              # Генерация отчётов (MD/HTML/JSON)
+    └── README.md
 ```
 ego-prompt-library/
 ├── README.md                  # Этот файл
@@ -41,34 +84,53 @@ ego-prompt-library/
     └── README.md
 ```
 
-## Промпты
+## 🚀 Возможности
+
+### 1. Создание ролей
+- **Шаблоны** — готовые файлы для быстрой старта новой роли
+- **Валидатор** — проверка структуры, секций, метаданных
+- **Шаблон добавления** — пошаговая инструкция `TEMPLATE_NEW_ROLE.md`
+
+### 2. Тестирование
+- **Регрессионные тесты** — TC-001, TC-002... для каждой роли
+- **Edge cases** — граничные сценарии
+- **Автоматическая проверка** — `validate.py --run-tests`
+
+### 3. Метрики
+- **Usage count** — частота использования
+- **Test pass rate** — % пройденных тестов (цель: ≥ 95%)
+- **Latency P50/P95/P99** — время генерации (цель: P50 < 15s)
+- **Quality Avg** — оценка качества (цель: ≥ 4.0)
+- **Changes/month** — частота изменений (цель: ≤ 2)
+- **Dashboard** — сводная панель с трендами
+
+### 4. CI/CD
+- **GitHub Actions** — автоматическая валидация при каждом PR
+- **Quality gates** — проверка по метрикам
+- **JSON-вывод** — интеграция с любыми CI-системами
+
+### 5. Governance
+- **Роли** — Owner, Reviewer, Maintainer
+- **Версионирование** — Semantic Versioning (v1.0.0, v1.1.0, v2.0.0)
+- **PR Process** — checklist → review → approval → merge
+- **Deprecation** — graceful deprecation с grace period
+- **Quarterly Review** — проверка актуальности каждый квартал
+
+### 6. Отчётность
+- **Markdown-отчёты** — текстовая сводка
+- **HTML-дашборды** — визуальная панель
+- **JSON** — для интеграции с внешними системами
+- **Quality Gates** — автоматическое выявление проблем
+
+## 📦 Промпты
 
 | Промпт | Версия | Статус | Описание |
 |--------|--------|--------|----------|
 | [python-architect](prompts/python-architect/) | v1.1.0 | ✅ validated | AI-роль для проектирования архитектуры Python-проектов |
 
-## Быстрый старт
+## 🛠 Scripts
 
-### Использование промпта
-
-1. Открой `prompts/<role>/prompt.md`
-2. Скопируй содержимое в system message AI-ассистента
-3. Готово — роль активна
-
-### Создание нового промпта
-
-```bash
-# 1. Скопируй шаблоны
-cp templates/* prompts/my-new-role/
-
-# 2. Заполни файлы согласно conventions.md
-# 3. Запусти валидацию
-python scripts/validate.py prompts/my-new-role/
-
-# 4. Создай PR → review → merge
-```
-
-### Валидация
+### `validate.py` — Валидация структуры
 
 ```bash
 # Все промпты
@@ -84,7 +146,83 @@ python scripts/validate.py --strict
 python scripts/validate.py --json
 ```
 
-## Governance
+### `metrics-collector.py` — Сбор метрик
+
+```bash
+# Все промпты
+python scripts/metrics-collector.py --all
+
+# Конкретный промпт
+python scripts/metrics-collector.py prompts/python-architect
+
+# Обновить dashboards
+python scripts/metrics-collector.py --dashboard
+
+# JSON-вывод
+python scripts/metrics-collector.py --all --json > metrics.json
+```
+
+### `report.py` — Генерация отчётов
+
+```bash
+# Markdown-отчёт
+python scripts/report.py --output report.md
+
+# HTML-дашборд
+python scripts/report.py --html --output dashboard.html
+
+# JSON для CI
+python scripts/report.py --json --output report.json
+
+# Только проблемы
+python scripts/report.py --strict
+```
+
+### `ci-check.py` — CI-скрипт
+
+```bash
+python scripts/ci-check.py
+```
+
+## 📚 Документация
+
+| Документ | Описание |
+|----------|----------|
+| [playbook.md](docs/playbook.md) | Руководство: создание, обновление, валидация |
+| [conventions.md](docs/conventions.md) | Соглашения: форматирование, структуры, шаблоны |
+| [governance.md](docs/governance.md) | Управление: roles, PR, review, metrics, deprecation |
+| [metrics.md](docs/metrics.md) | Система метрик и dashboards |
+| [TEMPLATE_NEW_ROLE.md](TEMPLATE_NEW_ROLE.md) | Шаблон добавления новой роли |
+| [scripts/README.md](scripts/README.md) | Описание скриптов |
+
+## 🔄 Добавление новой роли
+
+Смотри [TEMPLATE_NEW_ROLE.md](TEMPLATE_NEW_ROLE.md) — пошаговая инструкция.
+
+Быстрый старт:
+
+```bash
+# 1. Создать структуру
+mkdir -p prompts/<role-name>/metrics
+
+# 2. Заполнить файлы (см. шаблон)
+# prompts/<role-name>/prompt.md
+# prompts/<role-name>/card.md
+# prompts/<role-name>/test-cases.md
+# prompts/<role-name>/changelog.md
+# prompts/<role-name>/metrics/{dashboard,usage,quality,latency}.md
+
+# 3. Валидация
+python scripts/validate.py prompts/<role-name>
+
+# 4. Метрики
+python scripts/metrics-collector.py prompts/<role-name>
+
+# 5. Отчёт
+python scripts/report.py --output report.md
+```
+
+## 🤝 Governance
 
 Полный процесс управления: [docs/governance.md](docs/governance.md)
 
@@ -94,17 +232,22 @@ python scripts/validate.py --json
 - **Deprecation:** Grace period 2 release cycles
 - **Review:** Quarterly review актуальности
 
-## Metrics
+## 📊 Metrics
 
 Система метрик: [docs/metrics.md](docs/metrics.md)
 
 Каждый промпт собирает:
 - **Usage** — частота и сценарии использования
-- **Test pass rate** — стабильность тестов
-- **Latency** — время генерации
-- **Quality** — оценка пользователя (1-5)
+- **Test pass rate** — стабильность тестов (цель: ≥ 95%)
+- **Latency** — время генерации P50/P95/P99 (цель: P50 < 15s)
+- **Quality** — оценка пользователя (1-5, цель: ≥ 4.0)
 - **Dashboard** — сводка с трендами
 
-## License
+Quality Gates:
+- 🔴 **Critical** — test pass rate < 80%, quality < 3.0, latency > 30s
+- 🟡 **Warning** — test pass rate < 95%, quality < 4.0, latency > 15s
+- 🟢 **Healthy** — все метрики в норме
+
+## 📝 License
 
 Внутренняя библиотека.

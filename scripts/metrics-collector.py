@@ -27,6 +27,10 @@ from datetime import datetime, date
 from pathlib import Path
 from typing import Optional
 
+# Fix console encoding for Windows
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8")
+
 
 @dataclass
 class PromptMetrics:
@@ -108,9 +112,9 @@ def count_usage(card_content: str, changelog_content: str) -> int:
 
 def parse_test_results(test_content: str) -> tuple[int, int]:
     """Извлекает пройденные/общее количество тестов."""
-    passed = len(re.findall(r"Status: ✅", test_content))
-    failed = len(re.findall(r"Status: ❌", test_content))
-    pending = len(re.findall(r"Status: ⏳", test_content))
+    passed = len(re.findall(r"\*\*?Status:\*\*?\s*✅", test_content))
+    failed = len(re.findall(r"\*\*?Status:\*\*?\s*❌", test_content))
+    pending = len(re.findall(r"\*\*?Status:\*\*?\s*⏳", test_content))
     total = passed + failed + pending
     return passed, total
 
@@ -346,7 +350,7 @@ def main():
         prompts = discover_prompts(library_root)
 
     if not prompts:
-        print("⚠️  No prompts found.")
+        print("[WARN] No prompts found.")
         sys.exit(0)
 
     # Собираем метрики
@@ -357,7 +361,7 @@ def main():
         for m in metrics_list:
             prompt_dir = library_root / "prompts" / m.name
             update_dashboard(m, prompt_dir)
-        print(f"✅ Updated dashboards for {len(metrics_list)} prompt(s)")
+        print(f"[OK] Updated dashboards for {len(metrics_list)} prompt(s)")
 
     # JSON-вывод
     if args.json:
@@ -374,7 +378,7 @@ def main():
     print(f"{'='*60}")
 
     for m in metrics_list:
-        print(f"\n📊 {m.name} (v{m.version}, {m.status})")
+        print(f"\n[METRICS] {m.name} ({m.version}, {m.status})")
         print(f"   Usage: {m.usage_count} | Tests: {m.test_pass_rate}% ({m.test_passed}/{m.test_total})")
         print(f"   Latency P50: {m.latency_p50}s | Quality: {m.quality_avg if m.quality_count > 0 else '—'}")
         print(f"   Changes this month: {m.changes_this_month}")
@@ -383,7 +387,7 @@ def main():
     if args.report:
         report = generate_summary(metrics_list)
         Path("report.md").write_text(report, encoding="utf-8")
-        print(f"\n✅ Report written to report.md")
+        print(f"\n[OK] Report written to report.md")
 
     print(f"\n{'='*60}\n")
 
