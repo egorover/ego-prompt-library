@@ -43,6 +43,11 @@ ego-prompt-library/
 │           ├── usage.md       # Частота использования
 │           ├── quality.md     # Оценка качества (1-5)
 │           └── latency.md     # Время генерации
+│   └── python-dev/            # Вторая роль (development)
+├── .github/                   # CI/CD workflows
+│   └── workflows/
+│       ├── prompt-ci.yml      # Валидация при PR/push
+│       └── dashboard-update.yml # Monthly dashboard + quarterly review
 ├── docs/                      # Документация
 │   ├── playbook.md            # Руководство: создание, обновление, валидация
 │   ├── conventions.md         # Соглашения: форматирование, структуры, шаблоны
@@ -60,29 +65,6 @@ ego-prompt-library/
     ├── report.py              # Генерация отчётов (MD/HTML/JSON)
     └── README.md
 ```
-ego-prompt-library/
-├── README.md                  # Этот файл
-├── .gitignore
-├── prompts/                   # Промпты (production артефакты)
-│   └── python-architect/      # ← один промпт = одна директория
-│       ├── prompt.md          # Системный промпт (7 секций)
-│       ├── card.md            # Карточка роли (metadata, input/output, scope)
-│       ├── test-cases.md      # Тесты (TC + Edge Cases + Metrics)
-│       └── changelog.md       # История изменений (SemVer)
-├── docs/                      # Документация
-│   ├── playbook.md            # Руководство: создание, обновление, валидация
-│   ├── conventions.md         # Соглашения: форматирование, структуры, шаблоны
-│   └── governance.md          # Управление: roles, PR, review, metrics, deprecation
-├── templates/                 # Шаблоны для новых промптов
-│   ├── prompt-template.md
-│   ├── card-template.md
-│   ├── test-template.md
-│   └── changelog-template.md
-└── scripts/                   # Валидация и CI
-    ├── validate.py            # CLI-валидатор структуры
-    ├── ci-check.py            # CI-скрипт для GitHub Actions
-    └── README.md
-```
 
 ## 🚀 Возможности
 
@@ -94,7 +76,7 @@ ego-prompt-library/
 ### 2. Тестирование
 - **Регрессионные тесты** — TC-001, TC-002... для каждой роли
 - **Edge cases** — граничные сценарии
-- **Автоматическая проверка** — `validate.py --run-tests`
+- **Автоматическая проверка** — `validate.py --strict`
 
 ### 3. Метрики
 - **Usage count** — частота использования
@@ -127,6 +109,7 @@ ego-prompt-library/
 | Промпт | Версия | Статус | Описание |
 |--------|--------|--------|----------|
 | [python-architect](prompts/python-architect/) | v1.1.0 | ✅ validated | AI-роль для проектирования архитектуры Python-проектов |
+| [python-dev](prompts/python-dev/) | v1.0.0 | ✅ validated | AI-роль для написания производственного Python-кода |
 
 ## 🛠 Scripts
 

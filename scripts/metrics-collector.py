@@ -158,7 +158,7 @@ def parse_quality(quality_content: str) -> tuple[float, int]:
     ratings = []
     for line in quality_content.split('\n'):
         # Формат: | 2026-06-18 | 5 | admin | ... | ...
-        match = re.match(r'\|\s*\d{4}-\d{2}-\d{2}\s*\|[^|]*\|\s*(\d+)\s*\|', line)
+        match = re.match(r'\|\s*\d{4}-\d{2}-\d{2}\s*\|\s*(\d+)\s*\|', line)
         if match:
             rating = int(match.group(1))
             if 1 <= rating <= 5:
