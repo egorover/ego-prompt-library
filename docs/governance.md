@@ -107,7 +107,7 @@ Reviewer проверяет:
 ## Branching Model
 
 ```
-main (production)
+master (production)
   ├── feature/add-new-role
   ├── feature/improve-python-architect
   └── hotfix/fix-prompt-contradiction
@@ -115,9 +115,9 @@ main (production)
 
 ### Правила
 
-- **main** — защищённая ветка, только через PR с approval
+- **master** — защищённая ветка, только через PR с approval
 - **feature/** — для новых промптов и крупных изменений
-- **hotfix/** — для срочных исправлений, затем merge в main + merge back в feature
+- **hotfix/** — для срочных исправлений, затем merge в master + merge back в feature
 
 ## Versioning Policy
 
@@ -243,7 +243,7 @@ draft → testing → validated → (deprecated) → removed
 
 1. Owner создаёт hotfix PR (обходит обычный процесс)
 2. → 1 reviewer (любой доступный)
-3. Merge immediately → main
+3. Merge immediately → master
 4. Post-mortem в течение 24 часов
 5. Записать lessons learned
 

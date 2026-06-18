@@ -247,7 +247,7 @@ python scripts/validate.py --json
 - **Owner** — ответственный за промпт
 - **Reviewer** — проверяет PR
 - **Maintainer** — управляет репозиторием
-- **Branching Model** — main защищён, PR с approval
+- **Branching Model** — master защищён, PR с approval
 - **Deprecation Policy** — grace period 2 release cycles
 - **Quarterly Review** — проверка актуальности каждый квартал
 
