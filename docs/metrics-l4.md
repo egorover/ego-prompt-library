@@ -128,7 +128,7 @@ python scripts/report.py --json --output report.json
 ```markdown
 # Dashboard: <role-name>
 
-## Summary (2025-07-12)
+## Summary (2026-06-19)
 
 | Метрика            | Значение | Статус | Тренд  |
 |--------------------|----------|--------|--------|
@@ -147,12 +147,12 @@ python scripts/report.py --json --output report.json
 ```markdown
 # Usage Log: <role-name>
 
-## 2025-07
+## 2026-06
 
 | Date       | User  | Scenario            | Source     |
 |------------|-------|---------------------|------------|
-| 2025-07-15 | alice | Декомпозиция монолита | direct     |
-| 2025-07-18 | bob   | Выбор паттерна       | PR #42     |
+| 2026-06-19 | alice | Декомпозиция монолита | direct     |
+| 2026-06-19 | bob   | Выбор паттерна       | PR #42     |
 ```
 
 ### Quality Rating
@@ -160,12 +160,12 @@ python scripts/report.py --json --output report.json
 ```markdown
 # Quality Ratings: <role-name>
 
-## 2025-07
+## 2026-06
 
-| Date       | User | Relevance | Completeness | Structure | Value | Avg |
-|------------|------|-----------|--------------|-----------|-------|-----|
-| 2025-07-15 | alice | 5 | 4 | 5 | 4 | 4.5 |
-| 2025-07-18 | bob   | 4 | 5 | 4 | 5 | 4.5 |
+| Date | User | Relevance | Completeness | Structure | Value | Scenario | Notes | Avg |
+|------|------|-----------|--------------|-----------|-------|----------|-------|-----|
+| 2026-06-19 | alice | 5 | 4 | 5 | 4 | Написание функции | Отличный код | 4.5 |
+| 2026-06-19 | bob | 4 | 5 | 4 | 5 | Дебаггинг | Чёткое решение | 4.5 |
 ```
 
 ## Автоматизация

@@ -154,22 +154,38 @@ def parse_latency(latency_content: str) -> tuple[float, float, float]:
 
 
 def parse_quality(quality_content: str) -> tuple[float, int]:
-    """Извлекает средний рейтинг качества."""
+    """Извлекает средний рейтинг качества из унифицированного шаблона."""
     ratings = []
     for line in quality_content.split('\n'):
-        # Формат 1: | 2026-06-18 | 5 | admin | ... (python-dev)
-        # Формат 2: | 2026-06-18 | admin | 5 | 5 | 5 | 5 | 5.0 | (python-architect)
-        match = re.match(r'\|\s*\d{4}-\d{2}-\d{2}\s*\|', line)
-        if not match:
+        # Новый формат: | Date | User | Relevance | Completeness | Structure | Value | Scenario | Notes | Avg |
+        if '|' not in line or not line.startswith('|'):
             continue
-        # Нашли строку с датой — извлекаем все числа из строки
-        numbers = re.findall(r'\|\s*(\d+)', line)
-        # Первое число после даты — это рейтинг (format 1)
-        # Или третье число (index 2) — это первое значение (relevance) (format 2)
-        if len(numbers) >= 2:
-            rating = int(numbers[1])  # второе число, первое — это часть даты
-            if 1 <= rating <= 5:
-                ratings.append(rating)
+        
+        parts = [p.strip() for p in line.split('|')]
+        # parts[0] пустой, parts[1] Date, parts[2] User, parts[3] Relevance, ...
+        # parts[4] Completeness, parts[5] Structure, parts[6] Value, ... parts[9] Avg
+        
+        if len(parts) >= 7:
+            try:
+                # Считаем среднее между Relevance, Completeness, Structure, Value
+                relevance = int(parts[2])
+                completeness = int(parts[3])
+                structure = int(parts[4])
+                value = int(parts[5])
+                avg = (relevance + completeness + structure + value) / 4
+                if 1 <= avg <= 5:
+                    ratings.append(avg)
+            except (ValueError, IndexError):
+                continue
+        elif len(parts) >= 4:
+            # Фоллбэк на старый формат (если вдруг остался)
+            try:
+                rating = int(parts[1])
+                if 1 <= rating <= 5:
+                    ratings.append(rating)
+            except (ValueError, IndexError):
+                continue
+                
     if not ratings:
         return 0.0, 0
     return round(sum(ratings) / len(ratings), 1), len(ratings)
