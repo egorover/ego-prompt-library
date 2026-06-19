@@ -2,12 +2,8 @@
 """
 Metrics Collector — сбор метрик для prompt library.
 
-Собирает:
-- Usage count (по usage.md entries)
-- Test pass rate (по test-cases.md Status)
-- Latency (по latency.md)
-- Quality rating (по quality.md)
-- Change frequency (по changelog.md)
+Единая точка входа для сбора метрик из всех промптов.
+Использует модули: parsers, dashboard.
 
 Использование:
     python scripts/metrics-collector.py                     # собрать для всех промптов
@@ -25,6 +21,8 @@ from datetime import date
 from pathlib import Path
 
 from shared import read_file, discover_prompts, VALID_STATUSES
+from metrics.parsers import parse_latency, parse_quality, parse_test_results
+from metrics.dashboard import update_dashboard
 
 
 @dataclass
@@ -88,86 +86,21 @@ def count_usage(usage_content: str) -> int:
     for line in usage_content.split("\n"):
         if line.startswith("|") and not line.startswith("| Date"):
             parts = [p.strip() for p in line.split("|")]
-            # Строка данных: | date | user | scenario | source |
             if len(parts) >= 5 and parts[1] and parts[2]:
                 count += 1
     return count
 
 
-def parse_test_results(test_content: str) -> tuple[int, int]:
-    """Извлекает пройденные/общее количество тестов."""
-    passed = len(re.findall(r"\*\*?Status:\*\*?\s*\u2705", test_content))
-    failed = len(re.findall(r"\*\*?Status:\*\*?\s*\u274c", test_content))
-    pending = len(re.findall(r"\*\*?Status:\*\*?\s*\u23f3", test_content))
-    return passed, passed + failed + pending
-
-
-def parse_latency(latency_content: str) -> tuple[float, float, float]:
-    """Извлекает P50, P95, P99 из latency.md."""
-    p50_values: list[int] = []
-    p95_values: list[int] = []
-    p99_values: list[int] = []
-
-    for line in latency_content.split("\n"):
-        if "|" not in line:
-            continue
-        time_values = re.findall(r"(\d+)s", line)
-        if len(time_values) >= 3:
-            p50_values.append(int(time_values[0]))
-            p95_values.append(int(time_values[1]))
-            p99_values.append(int(time_values[2]))
-
-    def percentile(values: list[int], p: float) -> float:
-        if not values:
-            return 0.0
-        sorted_v = sorted(values)
-        k = (len(sorted_v) - 1) * (p / 100)
-        f = int(k)
-        c = f + 1 if f + 1 < len(sorted_v) else f
-        d = k - f
-        return round(sorted_v[f] + d * (sorted_v[c] - sorted_v[f]), 1)
-
-    return (
-        percentile(p50_values, 50),
-        percentile(p95_values, 95),
-        percentile(p99_values, 99),
-    )
-
-
-def parse_quality(quality_content: str) -> tuple[float, int]:
-    """Извлекает средний рейтинг качества из унифицированного шаблона."""
-    ratings: list[float] = []
-
-    for line in quality_content.split("\n"):
-        if "|" not in line or not line.startswith("|"):
-            continue
-
-        parts = [p.strip() for p in line.split("|")]
-        # Формат: | Date | User | Relevance | Completeness | Structure | Value | Scenario | Notes | Avg |
-        if len(parts) >= 7:
-            try:
-                relevance = int(parts[2])
-                completeness = int(parts[3])
-                structure = int(parts[4])
-                value = int(parts[5])
-                avg = (relevance + completeness + structure + value) / 4
-                if 1 <= avg <= 5:
-                    ratings.append(avg)
-            except (ValueError, IndexError):
-                continue
-
-    if not ratings:
-        return 0.0, 0
-    return round(sum(ratings) / len(ratings), 1), len(ratings)
-
-
 def count_changes_this_month(changelog_content: str) -> int:
-    """Считает количество версий за текущий месяц (без double-counting)."""
+    """Считает количество версий за текущий месяц."""
     now = date.today()
     current_month = now.strftime("%Y-%m")
 
-    # Считаем версии с датами в текущем месяце
-    versions = re.findall(r"## \[v?\d+\.\d+\.\d+\].*?(\d{4}-\d{2}-\d{2})", changelog_content, re.DOTALL)
+    versions = re.findall(
+        r"## \[v?\d+\.\d+\.\d+\].*?(\d{4}-\d{2}-\d{2})",
+        changelog_content,
+        re.DOTALL,
+    )
     return sum(1 for v_date in versions if v_date.startswith(current_month))
 
 
@@ -225,97 +158,6 @@ def collect_metrics(prompt_dir: Path) -> PromptMetrics:
         metrics.quality_avg, metrics.quality_count = parse_quality(quality_content)
 
     return metrics
-
-
-def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
-    """Обновляет dashboard.md для промпта."""
-    dashboard_path = prompt_dir / "metrics" / "dashboard.md"
-    if not dashboard_path.exists():
-        return
-
-    now = date.today().strftime("%Y-%m-%d")
-
-    test_status = "🟢" if metrics.test_pass_rate >= 95 else ("🟡" if metrics.test_pass_rate >= 80 else "🔴")
-    latency_status = "🟢" if metrics.latency_p50 < 15 else ("🟡" if metrics.latency_p50 < 30 else "🔴")
-    quality_status = "🟢" if metrics.quality_avg >= 4.0 else ("🟡" if metrics.quality_avg >= 3.0 else "🔴")
-
-    content = f"""# Dashboard: {metrics.name}
-
-## Summary ({now})
-
-| Метрика            | Значение | Статус | Тренд  |
-|--------------------|----------|--------|--------|
-| Usage count        | {metrics.usage_count}        | ⚪     | {'→ рост' if metrics.usage_count > 0 else '⚪'}      |
-| Test pass rate     | {metrics.test_pass_rate}%     | {test_status}     | {'→ стаб' if metrics.test_pass_rate == 100 else '→ ' + ('рост' if metrics.test_pass_rate > 95 else 'падение')} |
-| Latency P50        | {int(metrics.latency_p50)}s       | {latency_status}     | —      |
-| Quality Avg        | {metrics.quality_avg if metrics.quality_count > 0 else '—'}        | {quality_status if metrics.quality_count > 0 else '⚪'}     | —      |
-| Changes (this mo)  | {metrics.changes_this_month}        | {'🟢' if metrics.changes_this_month <= 2 else '🟡'}     | —      |
-| Open issues        | {metrics.open_issues}        | {'🟢' if metrics.open_issues < 3 else '🟡'}     | —      |
-
-## Trend (последние 3 месяца)
-
-| Месяц    | Usage | Test% | Latency | Quality | Issues |
-|----------|-------|-------|---------|---------|--------|
-| {now[:7]}  | {metrics.usage_count}     | {metrics.test_pass_rate}   | {int(metrics.latency_p50)}s      | {metrics.quality_avg if metrics.quality_count > 0 else '—'}       | {metrics.open_issues}      |
-
-> 📌 Дашборд обновляется автоматически через CI.
-"""
-
-    dashboard_path.write_text(content, encoding="utf-8")
-
-
-def generate_summary(metrics_list: list[PromptMetrics]) -> str:
-    """Генерирует сводный отчёт по всем промптам."""
-    total = len(metrics_list)
-    passed = sum(1 for m in metrics_list if m.test_pass_rate >= 95)
-    avg_latency = sum(m.latency_p50 for m in metrics_list) / total if total > 0 else 0
-    avg_quality = sum(m.quality_avg for m in metrics_list if m.quality_count > 0) / max(1, sum(1 for m in metrics_list if m.quality_count > 0))
-
-    now = date.today().strftime("%Y-%m-%d")
-
-    report = f"""# Prompt Library Metrics Report
-
-**Date:** {now}
-**Prompts:** {total} | **Healthy:** {passed} | **Avg Latency:** {avg_latency:.0f}s | **Avg Quality:** {avg_quality:.1f}
-
----
-
-## Summary
-
-| Метрика | Значение | Статус |
-|---------|----------|--------|
-| Total prompts | {total} | — |
-| Pass rate ≥ 95% | {passed}/{total} | {'🟢' if passed == total else '🟡'} |
-| Avg latency P50 | {avg_latency:.0f}s | {'🟢' if avg_latency < 15 else '🟡'} |
-| Avg quality | {avg_quality:.1f} | {'🟢' if avg_quality >= 4.0 else '🟡'} |
-
----
-
-## Per-Prompt Metrics
-
-"""
-
-    for m in metrics_list:
-        status_icon = "🟢" if m.test_pass_rate >= 95 and m.latency_p50 < 15 else "🟡"
-        report += f"""### {m.name} {status_icon}
-
-| Метрика | Значение |
-|---------|----------|
-| Version | {m.version} |
-| Status | {m.status} |
-| Usage count | {m.usage_count} |
-| Test pass rate | {m.test_pass_rate}% |
-| Latency P50 | {m.latency_p50}s |
-| Latency P95 | {m.latency_p95}s |
-| Latency P99 | {m.latency_p99}s |
-| Quality Avg | {m.quality_avg if m.quality_count > 0 else '—'} |
-| Changes (this mo) | {m.changes_this_month} |
-
----
-
-"""
-
-    return report
 
 
 def main() -> None:
