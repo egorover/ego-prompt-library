@@ -3,17 +3,15 @@
 Metrics Collector — сбор метрик для prompt library.
 
 Собирает:
-- Usage count (по changelog entries)
+- Usage count (по usage.md entries)
 - Test pass rate (по test-cases.md Status)
 - Latency (по latency.md)
 - Quality rating (по quality.md)
 - Change frequency (по changelog.md)
-- Open issues (по card.md status)
 
 Использование:
     python scripts/metrics-collector.py                     # собрать для всех промптов
     python scripts/metrics-collector.py prompts/python-architect  # конкретный
-    python scripts/metrics-collector.py --all               # явный сбор всех
     python scripts/metrics-collector.py --json              # JSON-вывод
     python scripts/metrics-collector.py --dashboard         # обновить dashboard
 """
@@ -23,13 +21,10 @@ import json
 import re
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, date
+from datetime import date
 from pathlib import Path
-from typing import Optional
 
-# Fix console encoding for Windows
-if sys.platform == "win32":
-    sys.stdout.reconfigure(encoding="utf-8")
+from shared import read_file, discover_prompts, VALID_STATUSES
 
 
 @dataclass
@@ -48,7 +43,6 @@ class PromptMetrics:
     open_issues: int = 0
     version: str = ""
     status: str = ""
-    trend: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {
@@ -66,34 +60,19 @@ class PromptMetrics:
         }
 
 
-def discover_prompts(library_root: Path) -> list[Path]:
-    """Находит все директории промптов."""
-    prompts_dir = library_root / "prompts"
-    if not prompts_dir.exists():
-        return []
-    return [d for d in prompts_dir.iterdir() if d.is_dir()]
-
-
-def read_file(path: Path) -> str:
-    """Читает файл и возвращает содержимое."""
-    return path.read_text(encoding="utf-8")
-
-
 def parse_metadata(card_content: str) -> dict:
-    """Извлекает метаданные из card.md."""
-    metadata = {}
+    """Извлекает метаданные из card.md секции Metadata."""
+    metadata: dict[str, str] = {}
     in_metadata = False
 
-    for line in card_content.split('\n'):
-        if '## Metadata' in line or '## Metadata' in line:
+    for line in card_content.split("\n"):
+        if "## Metadata" in line:
             in_metadata = True
             continue
-
-        if in_metadata and line.startswith('##'):
+        if in_metadata and line.startswith("##"):
             break
-
         if in_metadata:
-            match = re.match(r'\|\s*(\w+)\s*\|\s*([^|]+?)\s*\|', line)
+            match = re.match(r"\|\s*(\w+)\s*\|\s*([^|]+?)\s*\|", line)
             if match:
                 key = match.group(1).strip()
                 value = match.group(2).strip()
@@ -103,34 +82,36 @@ def parse_metadata(card_content: str) -> dict:
     return metadata
 
 
-def count_usage(card_content: str, changelog_content: str) -> int:
-    """Считает количество использований по changelog."""
-    # Каждый changelog entry — это одно изменение/использование
-    versions = re.findall(r"## \[v?\d+\.\d+\.\d+\]", changelog_content)
-    return len(versions)
+def count_usage(usage_content: str) -> int:
+    """Считает количество использований по usage.md entries."""
+    count = 0
+    for line in usage_content.split("\n"):
+        if line.startswith("|") and not line.startswith("| Date"):
+            parts = [p.strip() for p in line.split("|")]
+            # Строка данных: | date | user | scenario | source |
+            if len(parts) >= 5 and parts[1] and parts[2]:
+                count += 1
+    return count
 
 
 def parse_test_results(test_content: str) -> tuple[int, int]:
     """Извлекает пройденные/общее количество тестов."""
-    passed = len(re.findall(r"\*\*?Status:\*\*?\s*✅", test_content))
-    failed = len(re.findall(r"\*\*?Status:\*\*?\s*❌", test_content))
-    pending = len(re.findall(r"\*\*?Status:\*\*?\s*⏳", test_content))
-    total = passed + failed + pending
-    return passed, total
+    passed = len(re.findall(r"\*\*?Status:\*\*?\s*\u2705", test_content))
+    failed = len(re.findall(r"\*\*?Status:\*\*?\s*\u274c", test_content))
+    pending = len(re.findall(r"\*\*?Status:\*\*?\s*\u23f3", test_content))
+    return passed, passed + failed + pending
 
 
 def parse_latency(latency_content: str) -> tuple[float, float, float]:
     """Извлекает P50, P95, P99 из latency.md."""
-    p50_values = []
-    p95_values = []
-    p99_values = []
+    p50_values: list[int] = []
+    p95_values: list[int] = []
+    p99_values: list[int] = []
 
-    # Ищем паттерн: <число>s ... <число>s ... <число>s
-    for line in latency_content.split('\n'):
-        if '|' not in line:
+    for line in latency_content.split("\n"):
+        if "|" not in line:
             continue
-        # Ищем 3+ значения типа "5s" в строке
-        time_values = re.findall(r'(\d+)s', line)
+        time_values = re.findall(r"(\d+)s", line)
         if len(time_values) >= 3:
             p50_values.append(int(time_values[0]))
             p95_values.append(int(time_values[1]))
@@ -155,19 +136,16 @@ def parse_latency(latency_content: str) -> tuple[float, float, float]:
 
 def parse_quality(quality_content: str) -> tuple[float, int]:
     """Извлекает средний рейтинг качества из унифицированного шаблона."""
-    ratings = []
-    for line in quality_content.split('\n'):
-        # Новый формат: | Date | User | Relevance | Completeness | Structure | Value | Scenario | Notes | Avg |
-        if '|' not in line or not line.startswith('|'):
+    ratings: list[float] = []
+
+    for line in quality_content.split("\n"):
+        if "|" not in line or not line.startswith("|"):
             continue
-        
-        parts = [p.strip() for p in line.split('|')]
-        # parts[0] пустой, parts[1] Date, parts[2] User, parts[3] Relevance, ...
-        # parts[4] Completeness, parts[5] Structure, parts[6] Value, ... parts[9] Avg
-        
+
+        parts = [p.strip() for p in line.split("|")]
+        # Формат: | Date | User | Relevance | Completeness | Structure | Value | Scenario | Notes | Avg |
         if len(parts) >= 7:
             try:
-                # Считаем среднее между Relevance, Completeness, Structure, Value
                 relevance = int(parts[2])
                 completeness = int(parts[3])
                 structure = int(parts[4])
@@ -177,39 +155,25 @@ def parse_quality(quality_content: str) -> tuple[float, int]:
                     ratings.append(avg)
             except (ValueError, IndexError):
                 continue
-        elif len(parts) >= 4:
-            # Фоллбэк на старый формат (если вдруг остался)
-            try:
-                rating = int(parts[1])
-                if 1 <= rating <= 5:
-                    ratings.append(rating)
-            except (ValueError, IndexError):
-                continue
-                
+
     if not ratings:
         return 0.0, 0
     return round(sum(ratings) / len(ratings), 1), len(ratings)
 
 
 def count_changes_this_month(changelog_content: str) -> int:
-    """Считает количество изменений за текущий месяц."""
+    """Считает количество версий за текущий месяц (без double-counting)."""
     now = date.today()
     current_month = now.strftime("%Y-%m")
-    count = 0
-    for line in changelog_content.split('\n'):
-        if current_month in line or now.strftime("%B") in line or now.strftime("%b") in line:
-            count += 1
-    # Альтернатива: считаем по версиям с датами
+
+    # Считаем версии с датами в текущем месяце
     versions = re.findall(r"## \[v?\d+\.\d+\.\d+\].*?(\d{4}-\d{2}-\d{2})", changelog_content, re.DOTALL)
-    for v_date in versions:
-        if v_date.startswith(current_month):
-            count += 1
-    return max(count, len(versions) if not count else count)
+    return sum(1 for v_date in versions if v_date.startswith(current_month))
 
 
 def parse_status(card_content: str) -> str:
-    """Извлекает статус промпта."""
-    for status in ("draft", "testing", "validated", "deprecated"):
+    """Извлекает статус промпта из card.md."""
+    for status in VALID_STATUSES:
         if f"| {status} " in card_content or f"| {status}$" in card_content:
             return status
     return "unknown"
@@ -228,12 +192,16 @@ def collect_metrics(prompt_dir: Path) -> PromptMetrics:
         metrics.version = metadata.get("Version", "")
         metrics.status = parse_status(card_content)
 
-    # Changelog
+    # Changelog + usage
     changelog_path = prompt_dir / "changelog.md"
     if changelog_path.exists():
         changelog_content = read_file(changelog_path)
-        metrics.usage_count = count_usage(card_content if card_path.exists() else "", changelog_content)
         metrics.changes_this_month = count_changes_this_month(changelog_content)
+
+    # Usage
+    usage_path = prompt_dir / "metrics" / "usage.md"
+    if usage_path.exists():
+        metrics.usage_count = count_usage(read_file(usage_path))
 
     # Test cases
     test_path = prompt_dir / "test-cases.md"
@@ -267,10 +235,8 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
 
     now = date.today().strftime("%Y-%m-%d")
 
-    # Определяем статусы
     test_status = "🟢" if metrics.test_pass_rate >= 95 else ("🟡" if metrics.test_pass_rate >= 80 else "🔴")
     latency_status = "🟢" if metrics.latency_p50 < 15 else ("🟡" if metrics.latency_p50 < 30 else "🔴")
-    usage_trend = "→ рост" if metrics.usage_count > 0 else "⚪"
     quality_status = "🟢" if metrics.quality_avg >= 4.0 else ("🟡" if metrics.quality_avg >= 3.0 else "🔴")
 
     content = f"""# Dashboard: {metrics.name}
@@ -279,7 +245,7 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
 
 | Метрика            | Значение | Статус | Тренд  |
 |--------------------|----------|--------|--------|
-| Usage count        | {metrics.usage_count}        | ⚪     | {usage_trend}      |
+| Usage count        | {metrics.usage_count}        | ⚪     | {'→ рост' if metrics.usage_count > 0 else '⚪'}      |
 | Test pass rate     | {metrics.test_pass_rate}%     | {test_status}     | {'→ стаб' if metrics.test_pass_rate == 100 else '→ ' + ('рост' if metrics.test_pass_rate > 95 else 'падение')} |
 | Latency P50        | {int(metrics.latency_p50)}s       | {latency_status}     | —      |
 | Quality Avg        | {metrics.quality_avg if metrics.quality_count > 0 else '—'}        | {quality_status if metrics.quality_count > 0 else '⚪'}     | —      |
@@ -352,14 +318,9 @@ def generate_summary(metrics_list: list[PromptMetrics]) -> str:
     return report
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Collect metrics for prompt library")
-    parser.add_argument(
-        "target",
-        nargs="?",
-        default=".",
-        help="Path to prompt directory or library root",
-    )
+    parser.add_argument("target", nargs="?", default=".", help="Path to prompt directory or library root")
     parser.add_argument("--all", action="store_true", help="Collect metrics for all prompts")
     parser.add_argument("--json", action="store_true", help="Output JSON format")
     parser.add_argument("--dashboard", action="store_true", help="Update dashboard files")
@@ -367,44 +328,34 @@ def main():
     args = parser.parse_args()
 
     target = Path(args.target).resolve()
-
-    # Определяем корень библиотеки
     is_prompt_dir = "prompts" in str(target) and target.is_dir()
     library_root = target.parent.parent if is_prompt_dir else target
 
-    # Находим промпты
-    if is_prompt_dir:
-        prompts = [target]
-    else:
-        prompts = discover_prompts(library_root)
+    prompts = [target] if is_prompt_dir else discover_prompts(library_root)
 
     if not prompts:
         print("[WARN] No prompts found.")
         sys.exit(0)
 
-    # Собираем метрики
     metrics_list = [collect_metrics(p) for p in prompts]
 
-    # Обновляем dashboards
     if args.dashboard:
         for m in metrics_list:
             prompt_dir = library_root / "prompts" / m.name
             update_dashboard(m, prompt_dir)
         print(f"[OK] Updated dashboards for {len(metrics_list)} prompt(s)")
 
-    # JSON-вывод
     if args.json:
         output = {
-            "collected_at": datetime.now().isoformat(),
+            "collected_at": date.today().isoformat(),
             "prompts": [m.to_dict() for m in metrics_list],
         }
         print(json.dumps(output, indent=2, ensure_ascii=False))
         return
 
-    # Ручной вывод
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Metrics Collection — {len(metrics_list)} prompt(s)")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     for m in metrics_list:
         print(f"\n[METRICS] {m.name} ({m.version}, {m.status})")
@@ -412,13 +363,12 @@ def main():
         print(f"   Latency P50: {m.latency_p50}s | Quality: {m.quality_avg if m.quality_count > 0 else '—'}")
         print(f"   Changes this month: {m.changes_this_month}")
 
-    # Генерация отчёта
     if args.report:
         report = generate_summary(metrics_list)
         Path("report.md").write_text(report, encoding="utf-8")
         print(f"\n[OK] Report written to report.md")
 
-    print(f"\n{'='*60}\n")
+    print(f"\n{'=' * 60}\n")
 
 
 if __name__ == "__main__":

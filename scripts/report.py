@@ -15,23 +15,28 @@ Report Generator — генерация отчётов для prompt library.
     python scripts/report.py --strict                 # только проблемы
 """
 
-import argparse
-import json
 import sys
 import importlib.util
-from dataclasses import dataclass, field
-from datetime import datetime, date
 from pathlib import Path
-from typing import Optional
 
 # Fix console encoding for Windows
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
 
+# Добавляем scripts в path для относительного импорта
+_scripts_dir = Path(__file__).parent
+if str(_scripts_dir) not in sys.path:
+    sys.path.insert(0, str(_scripts_dir))
+
+import argparse
+import json
+from datetime import date, datetime
+from dataclasses import dataclass, field
+
 # Загружаем metrics_collector динамически
-_scripts_dir = Path(__file__).parent.resolve()
 _spec = importlib.util.spec_from_file_location("metrics_collector", _scripts_dir / "metrics-collector.py")
 _metrics_module = importlib.util.module_from_spec(_spec)
+sys.modules["metrics_collector"] = _metrics_module
 _spec.loader.exec_module(_metrics_module)
 
 collect_metrics = _metrics_module.collect_metrics
