@@ -11,6 +11,26 @@ from pathlib import Path
 from shared import read_file
 
 
+def percentile(values: list[int], p: float) -> float:
+    """Вычисляет перцентиль P для списка значений.
+
+    Args:
+        values: Список числовых значений.
+        p: Перцентиль (0-100).
+
+    Returns:
+        Вычисленное значение перцентиля.
+    """
+    if not values:
+        return 0.0
+    sorted_v = sorted(values)
+    k = (len(sorted_v) - 1) * (p / 100)
+    f = int(k)
+    c = f + 1 if f + 1 < len(sorted_v) else f
+    d = k - f
+    return round(sorted_v[f] + d * (sorted_v[c] - sorted_v[f]), 1)
+
+
 def parse_test_results(test_content: str) -> tuple[int, int]:
     """Извлекает пройденные/общее количество тестов.
 
@@ -35,17 +55,6 @@ def parse_latency(latency_content: str) -> tuple[float, float, float]:
     Returns:
         Кортеж (p50, p95, p99) — перцентили в секундах.
     """
-
-    def percentile(values: list[int], p: float) -> float:
-        if not values:
-            return 0.0
-        sorted_v = sorted(values)
-        k = (len(sorted_v) - 1) * (p / 100)
-        f = int(k)
-        c = f + 1 if f + 1 < len(sorted_v) else f
-        d = k - f
-        return round(sorted_v[f] + d * (sorted_v[c] - sorted_v[f]), 1)
-
     p50_values: list[int] = []
     p95_values: list[int] = []
     p99_values: list[int] = []

@@ -180,16 +180,7 @@ draft → testing → validated → (deprecated) → removed
 
 ## Metrics
 
-### Что измеряем
-
-| Метрика                | Где                           | Как часто |
-|------------------------|-------------------------------|-----------|
-| **Usage count**        | issue / PR references         | weekly    |
-| **Test pass rate**     | test-cases.md Status          | per change|
-| **Prompt latency**     | время генерации (замерять)    | monthly   |
-| **Output quality**     | user feedback / rating        | monthly   |
-| **Change frequency**   | changelog.md                  | weekly    |
-| **Open issues**        | issues по промпту             | weekly    |
+Полная система метрик: [metrics.md](metrics.md)
 
 ### Dashboard (руководство по интерпретации)
 

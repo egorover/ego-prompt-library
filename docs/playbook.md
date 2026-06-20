@@ -60,14 +60,7 @@
 ## Related Files        — Ссылки на связанные файлы
 ```
 
-**Статусы:**
-
-| Статус | Значение | Когда использовать |
-|--------|----------|-------------------|
-| `draft` | Черновик | Не валидирован |
-| `testing` | Тестирование | Проходит тестирование |
-| `validated` | Готов | Прошёл все тесты |
-| `deprecated` | Устарел | Заменён новой версией |
+**Статусы:** (полная таблица: [conventions.md — Статусы](conventions.md#статусы))
 
 ### 3. `test-cases.md` — Тестовые кейсы
 
@@ -124,16 +117,9 @@
 - ... (если есть)
 ```
 
-**Типы изменений:**
+**Типы изменений:** (Semantic Versioning)
 
-| Тип | Версия | Описание |
-|-----|--------|----------|
-| `feat` | MINOR | Новое поведение / добавление |
-| `fix` | PATCH | Исправление без нового поведения |
-| `refactor` | PATCH | Изменение формы без смены поведения |
-| `docs` | PATCH | Обновление документации |
-| `test` | PATCH | Обновление тестов |
-| `chore` | PATCH | Рутинные изменения |
+Полная таблица типов и версионирования: [conventions.md — Semantic Versioning](conventions.md#semantic-versioning)
 
 ## Процесс создания нового промпта
 
@@ -168,19 +154,11 @@
 
 ## Pull Request Process
 
+> Полный PR Process описан в [governance.md](governance.md).
+
 ### Checklist PR
 
-```markdown
-## PR Checklist
-
-- [ ] Соответствует conventions.md
-- [ ] Обновлена card.md (metadata, status)
-- [ ] Обновлены test-cases.md (добавлены/изменены кейсы)
-- [ ] Обновлён changelog.md
-- [ ] Все тест-кейсы прошли (указать статус)
-- [ ] Owner подтвердил изменения
-- [ ] Получено ≥1 approval от Reviewer
-```
+Полный чеклист: [governance.md — PR Checklist](governance.md#pr-checklist)
 
 ### Review Criteria
 
@@ -210,12 +188,7 @@ python scripts/validate.py --json
 
 ### Ручная (Quality Gates)
 
-| Gate | Кто | Что проверяет |
-|------|-----|---------------|
-| **Pre-commit** | Owner | Форматирование, placeholder-текст |
-| **CI Check** | Автоматически | Структура, обязательные секции |
-| **Review** | Reviewer | Checklist, тесты, changelog |
-| **Merge** | Maintainer | Approval, version bump, CI passed |
+Полные quality gates: [governance.md — Quality Gates](governance.md#quality-gates)
 
 ## Валидация промпта
 
@@ -243,43 +216,7 @@ python scripts/validate.py --json
 
 Полный документ по управлению библиотекой: [governance.md](governance.md)
 
-Ключевые моменты:
-- **Owner** — ответственный за промпт
-- **Reviewer** — проверяет PR
-- **Maintainer** — управляет репозиторием
-- **Branching Model** — main защищён, PR с approval
-- **Deprecation Policy** — grace period 2 release cycles
-- **Quarterly Review** — проверка актуальности каждый квартал
-
-## Metrics Dashboard
+## Metrics
 
 Система метрик и дашборд: [metrics.md](metrics.md)
-
-Каждый промпт имеет директорию `metrics/`:
-
-```
-prompts/<role>/
-└── metrics/
-    ├── dashboard.md      # Сводка: usage, test%, latency, quality
-    ├── usage.md          # Лог использований
-    ├── quality.md        # Оценки качества (rating 1-5)
-    └── latency.md        # Замеры времени генерации
-```
-
-**Что измеряем:**
-
-| Метрика         | Что считаем           | Цель      |
-|-----------------|-----------------------|-----------|
-| Usage count     | Обращений в месяц     | растёт    |
-| Test pass rate  | % пройденных тестов   | ≥ 95%     |
-| Latency P50     | Медианное время       | < 15s     |
-| Quality Avg     | Средняя оценка        | ≥ 4.0     |
-| Changes/mo      | PR в месяц            | ≤ 2       |
-| Open issues     | Открытых проблем      | < 3       |
-
-**Как собирать:**
-
-1. **Ручной (минимум):** записывай после использования
-2. **Автоматический (рекомендуется):** CI + issue tracking
-3. **Quarterly Review:** собери все данные, обнови dashboard
 

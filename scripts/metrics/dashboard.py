@@ -1,21 +1,20 @@
 #!/usr/bin/env python3
-"""
-Dashboard updater — генерация и запись dashboard.md для промптов.
+"""Dashboard updater — генерация и запись dashboard.md для промптов.
 
-Использует attrs-based подход: принимает любой объект с нужными полями.
+Uses PromptMetrics dataclass to generate markdown dashboard files.
 """
 
 from datetime import date
 from pathlib import Path
 
+from metrics.models import PromptMetrics
 
-def update_dashboard(metrics: object, prompt_dir: Path) -> None:
+
+def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
     """Обновляет dashboard.md для промпта.
 
     Args:
-        metrics: Объект с атрибутами (name, usage_count, test_pass_rate,
-                 latency_p50, quality_avg, quality_count, changes_this_month,
-                 open_issues).
+        metrics: Объект с метриками промпта (PromptMetrics).
         prompt_dir: Путь к директории промпта.
     """
     dashboard_path = prompt_dir / "metrics" / "dashboard.md"
