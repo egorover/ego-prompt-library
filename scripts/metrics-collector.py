@@ -18,13 +18,12 @@ from datetime import date
 from pathlib import Path
 
 from shared import discover_prompts
-from metrics import collect_metrics
+from metrics import collect_metrics, update_dashboard
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Collect metrics for prompt library")
     parser.add_argument("target", nargs="?", default=".", help="Path to prompt directory or library root")
-    parser.add_argument("--all", action="store_true", help="Collect metrics for all prompts")
     parser.add_argument("--json", action="store_true", help="Output JSON format")
     parser.add_argument("--dashboard", action="store_true", help="Update dashboard files")
     parser.add_argument("--report", action="store_true", help="Generate full report")
@@ -45,7 +44,6 @@ def main() -> None:
     if args.dashboard:
         for m in metrics_list:
             prompt_dir = library_root / "prompts" / m.name
-            from metrics import update_dashboard
             update_dashboard(m, prompt_dir)
         print(f"[OK] Updated dashboards for {len(metrics_list)} prompt(s)")
 

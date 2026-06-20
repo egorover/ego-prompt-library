@@ -35,7 +35,7 @@ REQUIRED_CARD_SECTIONS = [
     "## Description",
     "## Input / Output",
     "## Scope & Boundaries",
-    "## Constraints & Anti-Patterns",
+    "## Constraints",
     "## Usage Examples",
     "## Validation Status",
     "## Related Files",
@@ -88,6 +88,6 @@ def parse_status(card_content: str) -> str:
         if in_metadata and line.startswith("##"):
             break
         for status in VALID_STATUSES:
-            if f"| {status} " in line or f"| {status}$" in line:
+            if f"| {status} " in line or f"| {status}|" in line:
                 return status
     return "unknown"

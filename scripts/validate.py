@@ -74,18 +74,30 @@ def validate_card_structure(content: str) -> list[str]:
 
 
 def validate_metadata(content: str) -> tuple[list[str], list[str]]:
-    """Проверяет обязательные поля в Metadata карточки."""
+    """Проверяет обязательные поля в Metadata карточки (только секция Metadata)."""
     errors: list[str] = []
     warnings: list[str] = []
 
+    # Извлекаем только секцию Metadata
+    metadata_content = ""
+    in_metadata = False
+    for line in content.split("\n"):
+        if "## Metadata" in line:
+            in_metadata = True
+            continue
+        if in_metadata and line.startswith("##"):
+            break
+        if in_metadata:
+            metadata_content += line + "\n"
+
     for field_name in REQUIRED_METADATA_FIELDS:
-        if f"| {field_name}" not in content:
+        if f"| {field_name}" not in metadata_content:
             errors.append(f"Missing metadata field: {field_name}")
 
-    if "YYYY-MM-DD" in content:
+    if "YYYY-MM-DD" in metadata_content:
         warnings.append("Metadata may contain placeholder values (YYYY-MM-DD)")
 
-    if not any(status in content for status in VALID_STATUSES):
+    if not any(status in metadata_content for status in VALID_STATUSES):
         errors.append("No valid status found in metadata (expected: draft/testing/validated/deprecated)")
 
     return errors, warnings
@@ -124,7 +136,7 @@ def validate_changelog(content: str) -> tuple[list[str], list[str]]:
 
 def validate_prompt(prompt_dir: Path, strict: bool = False) -> ValidationResult:
     """Полная валидация промпта."""
-    result = ValidationResult(prompt_dir=str(prompt_dir.relative_to(prompt_dir.parent.parent)))
+    result = ValidationResult(prompt_dir=prompt_dir.name)
 
     # 1. Файлы
     file_errors, file_warnings = validate_files(prompt_dir)

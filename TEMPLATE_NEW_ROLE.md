@@ -2,6 +2,8 @@
 
 Данный шаблон позволяет быстро добавить новую AI-роль в библиотеку, сохраняя единый стандарт качества и структуры.
 
+Полные спецификации: [conventions.md](docs/conventions.md), [governance.md](docs/governance.md).
+
 ---
 
 ## 1. Создание структуры директории
@@ -19,31 +21,20 @@ mkdir -p prompts/<role-name>/metrics
 
 Создай следующие файлы в `prompts/<role-name>/`:
 
-### 2.1. `prompt.md` — ядро роли
+### 2.1. `prompt.md` — ядро роли (7 секций по conventions)
+
+Структура:
 
 ```markdown
-# <Role-Name> — System Prompt
+# <Role-Name>
 
-## Role Definition
-...
-
-## Context
-...
-
-## Task
-...
-
-## Constraints
-...
-
-## Decision Framework
-...
-
-## Anti-Patterns
-...
-
-## Quick Reference
-...
+## 1. Identity & Purpose
+## 2. Context & Domain
+## 3. Decision Framework
+## 4. Interaction Rules
+## 5. Output Format
+## 6. Anti-Patterns
+## 7. Quick Reference
 ```
 
 Смотри `prompts/python-architect/prompt.md` как пример.
@@ -82,13 +73,7 @@ mkdir -p prompts/<role-name>/metrics
 ...
 
 ## Validation Status
-
-| Критерий     | Статус | Примечание           |
-|-------------|--------|----------------------|
-| Контракт    | ⬜     | —                    |
-| Границы     | ⬜     | —                    |
-| Edge-cases  | ⬜     | —                    |
-| Регрессия   | ⬜     | —                    |
+...
 
 ## Related Files
 ...
@@ -99,23 +84,28 @@ mkdir -p prompts/<role-name>/metrics
 ```markdown
 # <Role-Name> — Test Cases
 
+## Test Suite Overview
+
+| Метрика            | Значение |
+|--------------------|----------|
+| Всего кейсов       | N        |
+| Пройдено           | M        |
+| Пропущено          | P        |
+
 ## Test Cases
 
-### TC-001: <Название теста>
+### TC-001: <Краткое описание>
 
-| Field      | Value                    |
-|------------|--------------------------|
-| ID         | TC-001                   |
-| Description| ...                      |
-| Input      | ...                      |
-| Expected   | ...                      |
-| Status     | ⬜ not run                |
-| Score      | —                        |
+- **Input:** <входные данные>
+- **Expected:** <ожидаемый результат>
+- **Criteria:** <критерий оценки>
+- **Status:** ⏳
 
 ### TC-002: ...
 
 ## Edge Cases
-...
+
+### EC-001: ...
 
 ## Metrics
 ...
@@ -137,7 +127,7 @@ mkdir -p prompts/<role-name>/metrics
 | Summary  | Initial version    |
 
 ### Changes
-- Инициальная версия промпта
+- Первоначальная версия промпта
 - Создана базовая структура
 - Создана карточка роли
 - Добавлены базовые тестовые кейсы
@@ -161,7 +151,7 @@ mkdir -p prompts/<role-name>/metrics
 После создания файлов запусти валидатор:
 
 ```bash
-python validate.py prompts/<role-name>
+python scripts/validate.py prompts/<role-name>
 ```
 
 Он проверит:
@@ -174,26 +164,18 @@ python validate.py prompts/<role-name>
 
 ---
 
-## 4. Запуск тестов
+## 4. Сбор метрик
 
 ```bash
-python validate.py prompts/<role-name> --run-tests
+python scripts/metrics-collector.py prompts/<role-name>
 ```
 
 ---
 
-## 5. Сбор метрик
+## 5. Генерация отчёта
 
 ```bash
-python metrics-collector.py prompts/<role-name>
-```
-
----
-
-## 6. Генерация отчёта
-
-```bash
-python report.py
+python scripts/report_cli.py
 ```
 
 Отчёт будет сгенерирован по ВСЕМ ролям, включая новую.
@@ -204,13 +186,13 @@ python report.py
 
 - [ ] Создана директория `prompts/<role-name>/`
 - [ ] Создана директория `prompts/<role-name>/metrics/`
-- [ ] Заполнен `prompt.md` (7 секций по conventions)
+- [ ] Заполнен `prompt.md` (7 секций по conventions.md)
 - [ ] Заполнена `card.md` (metadata, description, input/output, scope, examples)
-- [ ] Заполнены `test-cases.md` (минимум 2 TC + edge-cases)
+- [ ] Заполнены `test-cases.md` (минимум 5 TC + edge-cases)
 - [ ] Создан `changelog.md` с первой версией
 - [ ] Созданы метрики в `metrics/`
-- [ ] Запущен `validate.py` — без ошибок
-- [ ] Запущены тесты — пройдены
+- [ ] Запущен `python scripts/validate.py prompts/<role-name>` — без ошибок
+- [ ] Запущены метрики `python scripts/metrics-collector.py prompts/<role-name>`
 - [ ] Статус в card.md изменён на `validated`
 
 ---
@@ -232,16 +214,13 @@ mkdir -p prompts/python-dev/metrics
 # prompts/python-dev/metrics/latency.md
 
 # 3. Валидация
-python validate.py prompts/python-dev
+python scripts/validate.py prompts/python-dev
 
-# 4. Тесты
-python validate.py prompts/python-dev --run-tests
+# 4. Метрики
+python scripts/metrics-collector.py prompts/python-dev
 
-# 5. Метрики
-python metrics-collector.py prompts/python-dev
-
-# 6. Общий отчёт
-python report.py
+# 5. Общий отчёт
+python scripts/report_cli.py
 ```
 
 Всё — CI автоматически подхватит новую роль.

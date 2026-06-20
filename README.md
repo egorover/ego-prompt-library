@@ -128,6 +128,7 @@ ego-prompt-library/
 |--------|--------|--------|----------|
 | [python-architect](prompts/python-architect/) | v1.1.0 | ✅ validated | AI-роль для проектирования архитектуры Python-проектов |
 | [python-dev](prompts/python-dev/) | v1.0.0 | ✅ validated | AI-роль для написания производственного Python-кода |
+| [python-dev](prompts/python-dev/) | v1.0.0 | ✅ validated | AI-роль для написания производственного Python-кода |
 
 ## 🛠 Scripts
 

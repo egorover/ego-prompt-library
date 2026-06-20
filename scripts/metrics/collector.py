@@ -42,13 +42,25 @@ def parse_metadata(card_content: str) -> dict:
 
 
 def count_usage(usage_content: str) -> int:
-    """Считает количество использований по usage.md entries."""
+    """Считает количество использований по usage.md entries.
+
+    Парсит строки таблицы, где есть хотя бы 3 непустых поля (кроме заголовка).
+    """
     count = 0
-    for line in usage_content.split("\n"):
-        if line.startswith("|") and not line.startswith("| Date"):
-            parts = [p.strip() for p in line.split("|")]
-            if len(parts) >= 5 and parts[1] and parts[2]:
-                count += 1
+    lines = usage_content.split("\n")
+    for i, line in enumerate(lines):
+        if not line.startswith("|"):
+            continue
+        # Пропускаем заголовок и разделитель
+        parts = [p.strip() for p in line.split("|")]
+        if i == 0 and any("Date" in p or "Дата" in p for p in parts):
+            continue
+        if "---" in line:
+            continue
+        # Считаем строку с данными: минимум 3 непустых поля
+        non_empty = [p for p in parts if p and p != "—"]
+        if len(non_empty) >= 3:
+            count += 1
     return count
 
 
