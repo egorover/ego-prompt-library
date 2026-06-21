@@ -8,8 +8,12 @@ Uses:
 - shared.METRICS_THRESHOLDS
 """
 
+
+from logger import get_logger
 from shared import METRICS_THRESHOLDS
 from metrics.models import PromptMetrics, Issue
+
+logger = get_logger(__name__)
 
 
 def check_quality_gate(metrics: PromptMetrics) -> list[Issue]:
@@ -21,7 +25,7 @@ def check_quality_gate(metrics: PromptMetrics) -> list[Issue]:
     Returns:
         Список найденных проблем (Issue).
     """
-    issues = []
+    issues: list[Issue] = []
     thresholds = METRICS_THRESHOLDS
 
     # Test pass rate
@@ -33,6 +37,7 @@ def check_quality_gate(metrics: PromptMetrics) -> list[Issue]:
             message=f"Test pass rate {metrics.test_pass_rate}% is below {thresholds['test_pass_rate']['critical']}%",
             recommendation="Run all test cases and fix failures immediately",
         ))
+        logger.warning("Critical: test_pass_rate for %s is %.1f%%", metrics.name, metrics.test_pass_rate)
     elif metrics.test_pass_rate < thresholds["test_pass_rate"]["warning"]:
         issues.append(Issue(
             severity="warning",
@@ -51,6 +56,7 @@ def check_quality_gate(metrics: PromptMetrics) -> list[Issue]:
             message=f"P50 latency {metrics.latency_p50}s exceeds {thresholds['latency_p50']['critical']}s",
             recommendation="Optimize prompt: reduce verbosity, simplify logic",
         ))
+        logger.warning("Critical: latency_p50 for %s is %.1fs", metrics.name, metrics.latency_p50)
     elif metrics.latency_p50 > thresholds["latency_p50"]["warning"]:
         issues.append(Issue(
             severity="warning",
@@ -69,6 +75,7 @@ def check_quality_gate(metrics: PromptMetrics) -> list[Issue]:
             message=f"Quality average {metrics.quality_avg} is below {thresholds['quality_avg']['critical']}",
             recommendation="Major review needed — prompt may be producing poor outputs",
         ))
+        logger.warning("Critical: quality_avg for %s is %.1f", metrics.name, metrics.quality_avg)
     elif metrics.quality_count > 0 and metrics.quality_avg < thresholds["quality_avg"]["warning"]:
         issues.append(Issue(
             severity="warning",
@@ -105,5 +112,14 @@ def check_quality_gate(metrics: PromptMetrics) -> list[Issue]:
             message="Prompt is in draft status",
             recommendation="Complete validation and move to testing/validated",
         ))
+
+    if issues:
+        logger.debug(
+            "Quality gate issues for %s: %d critical, %d warning, %d info",
+            metrics.name,
+            sum(1 for i in issues if i.severity == "critical"),
+            sum(1 for i in issues if i.severity == "warning"),
+            sum(1 for i in issues if i.severity == "info"),
+        )
 
     return issues

@@ -7,7 +7,10 @@ Uses PromptMetrics dataclass to generate markdown dashboard files.
 from datetime import date
 from pathlib import Path
 
+from logger import get_logger
 from metrics.models import PromptMetrics
+
+logger = get_logger(__name__)
 
 
 def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
@@ -19,6 +22,7 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
     """
     dashboard_path = prompt_dir / "metrics" / "dashboard.md"
     if not dashboard_path.exists():
+        logger.debug("Dashboard not found for %s, skipping", prompt_dir.name)
         return
 
     now = date.today().strftime("%Y-%m-%d")
@@ -49,4 +53,8 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
 > 📌 Дашборд обновляется автоматически через CI.
 """
 
-    dashboard_path.write_text(content, encoding="utf-8")
+    try:
+        dashboard_path.write_text(content, encoding="utf-8")
+        logger.debug("Dashboard updated for %s", prompt_dir.name)
+    except OSError as e:
+        logger.error("Failed to write dashboard for %s: %s", prompt_dir.name, e)

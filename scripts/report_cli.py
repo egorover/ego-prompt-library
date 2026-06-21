@@ -13,13 +13,15 @@ import argparse
 import sys
 from pathlib import Path
 
-# Fix console encoding for Windows
-if sys.platform == "win32":
-    sys.stdout.reconfigure(encoding="utf-8")
+from rich.console import Console
 
+from logger import get_logger
 from shared import discover_prompts
 from metrics import collect_metrics, check_quality_gate
 from report import generate_json_report, generate_html_report, generate_md_report
+
+logger = get_logger(__name__)
+console = Console()
 
 
 def main() -> None:
@@ -35,7 +37,7 @@ def main() -> None:
     prompts = discover_prompts(library_root)
 
     if not prompts:
-        print("[WARN] No prompts found.")
+        console.print("[WARN] No prompts found.", style="yellow")
         sys.exit(0)
 
     # Собираем метрики
@@ -47,33 +49,38 @@ def main() -> None:
         issues = check_quality_gate(m)
         all_issues.extend(issues)
 
-    # JSON-вывод
-    if args.json:
-        report = generate_json_report(metrics_list, all_issues, strict=args.strict)
+    try:
+        # JSON-вывод
+        if args.json:
+            report = generate_json_report(metrics_list, all_issues, strict=args.strict)
+            if args.output:
+                Path(args.output).write_text(report, encoding="utf-8")
+                console.print(f"[OK] JSON report written to {args.output}", style="green")
+            else:
+                console.print(report)
+            return
+
+        # HTML-вывод
+        if args.html:
+            report = generate_html_report(metrics_list, all_issues)
+            if args.output:
+                Path(args.output).write_text(report, encoding="utf-8")
+                console.print(f"[OK] HTML report written to {args.output}", style="green")
+            else:
+                console.print(report)
+            return
+
+        # Markdown-вывод (по умолчанию)
+        report = generate_md_report(metrics_list, all_issues)
         if args.output:
             Path(args.output).write_text(report, encoding="utf-8")
-            print(f"[OK] JSON report written to {args.output}")
+            console.print(f"[OK] Report written to {args.output}", style="green")
         else:
-            print(report)
-        return
-
-    # HTML-вывод
-    if args.html:
-        report = generate_html_report(metrics_list, all_issues)
-        if args.output:
-            Path(args.output).write_text(report, encoding="utf-8")
-            print(f"[OK] HTML report written to {args.output}")
-        else:
-            print(report)
-        return
-
-    # Markdown-вывод (по умолчанию)
-    report = generate_md_report(metrics_list, all_issues)
-    if args.output:
-        Path(args.output).write_text(report, encoding="utf-8")
-        print(f"[OK] Report written to {args.output}")
-    else:
-        print(report)
+            console.print(report)
+    except Exception as e:
+        logger.error("Error generating report: %s", e, exc_info=True)
+        console.print(f"[ERROR] Failed to generate report: {e}", style="red")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

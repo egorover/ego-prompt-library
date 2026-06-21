@@ -29,7 +29,7 @@ def generate_md_report(metrics_list: List[PromptMetrics], issues: List[Issue]) -
     healthy_count = sum(1 for m in metrics_list if m.test_pass_rate >= 95 and m.latency_p50 < 15)
 
     lines = [
-        f"# Prompt Library Report",
+        "# Prompt Library Report",
         "",
         f"**Date:** {now}",
         f"**Prompts:** {len(metrics_list)} | **Healthy:** {healthy_count} | **Issues:** {critical_count} critical, {warning_count} warnings, {info_count} info",

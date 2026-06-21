@@ -1,0 +1,50 @@
+8. MEDIUM: 
+conventions.md
+ — секции карточки
+Koda попыталась отредактировать docs/conventions.md
+Размышления 0.7 cек.
+
+Koda прочитала docs/conventions.md
+Размышления 3.0 cек.
+
+
+Koda отредактировала docs/conventions.md
+
+
+Размышления 1.4 cек.
+
+Koda отредактировала scripts/shared.py
+
+
+Размышления 0.4 cек.
+
+9. MEDIUM: 
+prompt-template.md
+ — не соответствует 7 секциям
+Koda отредактировала templates/prompt-template.md
+
+
+Размышления 0.4 cек.
+
+10. LOW: .gitignore
+Koda попыталась создать новый файл .gitignore
+Размышления 0.5 cек.
+
+Koda прочитала .gitignore
+Размышления 0.5 cек.
+
+Koda отредактировала .gitignore
+
+
+Размышления 0.6 cек.
+
+11. HIGH: pyproject.toml
+Koda создала новый файл pyproject.toml
+Размышления 2.3 cек.
+
+12. MEDIUM: 
+README.md
+ — architecture diagram + python-dev table
+Koda отредактировала README.md
+
+

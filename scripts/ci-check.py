@@ -9,8 +9,14 @@ CI-скрипт для GitHub Actions.
 import sys
 from pathlib import Path
 
+from rich.console import Console
+
+from logger import get_logger
 from shared import discover_prompts
 from validate import validate_prompt
+
+logger = get_logger(__name__)
+console = Console()
 
 
 def main() -> None:
@@ -18,7 +24,7 @@ def main() -> None:
     prompts = discover_prompts(library_root)
 
     if not prompts:
-        print("[WARN] No prompts found. Nothing to validate.")
+        console.print("[WARN] No prompts found. Nothing to validate.", style="yellow")
         sys.exit(0)
 
     all_passed = True
@@ -26,16 +32,16 @@ def main() -> None:
         result = validate_prompt(prompt_dir, strict=True)
         if not result.is_valid:
             all_passed = False
-            print(f"[FAIL] {result.prompt_dir}")
+            console.print(f"[red][FAIL][/red] {result.prompt_dir}")
             for error in result.errors:
-                print(f"   {error}")
+                console.print(f"   {error}")
             for warning in result.warnings:
-                print(f"   [WARN] {warning}")
+                console.print(f"   [yellow][WARN][/yellow] {warning}")
 
     if all_passed:
-        print(f"[OK] All {len(prompts)} prompt(s) validated successfully.")
+        console.print(f"[green][OK] All {len(prompts)} prompt(s) validated successfully.[/green]")
     else:
-        print(f"\n[FAIL] Validation failed for some prompts.")
+        console.print("\n[red][FAIL] Validation failed for some prompts.[/red]")
         sys.exit(1)
 
 

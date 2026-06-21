@@ -25,7 +25,6 @@ def generate_html_report(metrics_list: List[PromptMetrics], issues: List[Issue])
     now = date.today().strftime("%Y-%m-%d %H:%M")
     critical_count = sum(1 for i in issues if i.severity == "critical")
     warning_count = sum(1 for i in issues if i.severity == "warning")
-    info_count = sum(1 for i in issues if i.severity == "info")
     healthy_count = sum(1 for m in metrics_list if m.test_pass_rate >= 95 and m.latency_p50 < 15)
 
     # Build per-prompt rows
