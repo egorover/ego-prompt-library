@@ -8,7 +8,7 @@ Uses:
 - gate_checks (individual checkers)
 """
 
-from ..logger import get_logger
+from ._imports import get_logger
 from .models import PromptMetrics, Issue
 from .gate_checks import (
     check_test_pass_rate,

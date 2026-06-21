@@ -65,19 +65,20 @@ python scripts/metrics-collector.py --all --json > metrics.json
 ### Markdown-отчёт
 
 ```bash
-python scripts/report.py --output report.md
+python scripts/report_cli.py --output report.md
+# или: python scripts/report.py --output report.md
 ```
 
 ### HTML-дашборд
 
 ```bash
-python scripts/report.py --html --output dashboard.html
+python scripts/report_cli.py --html --output dashboard.html
 ```
 
 ### JSON для CI
 
 ```bash
-python scripts/report.py --json --output report.json
+python scripts/report_cli.py --json --output report.json
 ```
 
 ## Quality Gates

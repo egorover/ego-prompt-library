@@ -8,9 +8,9 @@ Uses:
 - shared.METRICS_THRESHOLDS
 """
 
-from ..logger import get_logger
-from ..shared import METRICS_THRESHOLDS
+from ._imports import get_logger
 from .models import PromptMetrics, Issue
+from .thresholds import get_metrics_thresholds
 
 logger = get_logger(__name__)
 
@@ -25,7 +25,7 @@ def check_test_pass_rate(metrics: PromptMetrics) -> list[Issue]:
         Список проблем (Issue).
     """
     issues: list[Issue] = []
-    thresholds = METRICS_THRESHOLDS
+    thresholds = get_metrics_thresholds()
 
     if metrics.test_pass_rate < thresholds["test_pass_rate"]["critical"]:
         issues.append(Issue(
@@ -58,7 +58,7 @@ def check_latency(metrics: PromptMetrics) -> list[Issue]:
         Список проблем (Issue).
     """
     issues: list[Issue] = []
-    thresholds = METRICS_THRESHOLDS
+    thresholds = get_metrics_thresholds()
 
     if metrics.latency_p50 > thresholds["latency_p50"]["critical"]:
         issues.append(Issue(
@@ -91,7 +91,7 @@ def check_quality(metrics: PromptMetrics) -> list[Issue]:
         Список проблем (Issue).
     """
     issues: list[Issue] = []
-    thresholds = METRICS_THRESHOLDS
+    thresholds = get_metrics_thresholds()
 
     if metrics.quality_count > 0 and metrics.quality_avg < thresholds["quality_avg"]["critical"]:
         issues.append(Issue(
@@ -124,7 +124,7 @@ def check_changes_frequency(metrics: PromptMetrics) -> list[Issue]:
         Список проблем (Issue).
     """
     issues: list[Issue] = []
-    thresholds = METRICS_THRESHOLDS
+    thresholds = get_metrics_thresholds()
 
     if metrics.changes_this_month > thresholds["changes_per_month"]["warning"]:
         issues.append(Issue(

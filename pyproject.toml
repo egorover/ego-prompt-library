@@ -17,16 +17,19 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["mypy>=1.8", "ruff>=0.2"]
+dev = ["mypy>=1.8", "ruff>=0.2", "pytest>=8.0"]
 
 [project.scripts]
 prompt-validate = "scripts.validate:main"
-prompt-metrics = "scripts.metrics.collector:main"
+prompt-metrics = "scripts.metrics.__main__:main"
 prompt-report = "scripts.report_cli:main"
 
+[tool.setuptools]
+package-dir = {"" = "."}
+
 [tool.setuptools.packages.find]
+where = ["."]
 include = ["scripts*"]
-namespaces = false
 
 [tool.mypy]
 python_version = "3.10"
@@ -37,3 +40,7 @@ disallow_untyped_defs = false
 [tool.ruff]
 line-length = 120
 target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["scripts"]

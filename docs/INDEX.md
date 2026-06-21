@@ -15,6 +15,7 @@
 | Документ | Описание |
 |----------|----------|
 | [governance.md](governance.md) | Управление библиотекой: роли, процессы, branching model |
+| [quarterly-reviews/2026-Q2.md](quarterly-reviews/2026-Q2.md) | Quarterly Review Q2 2026 |
 
 ## 📊 Metrics
 

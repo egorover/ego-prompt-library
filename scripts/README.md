@@ -28,26 +28,27 @@ python scripts/metrics-collector.py --all
 python scripts/metrics-collector.py prompts/python-architect
 
 # Обновить dashboards
-python scripts/metrics-collector.py --dashboard
+python scripts/metrics-collector.py --all --dashboard
 
 # JSON-вывод
 python scripts/metrics-collector.py --all --json > metrics.json
 ```
 
-### `report.py` — Генерация отчётов
+### `report_cli.py` — Генерация отчётов
 
 ```bash
 # Markdown-отчёт
-python scripts/report.py --output report.md
+python scripts/report_cli.py --output report.md
+# или: python scripts/report.py --output report.md
 
 # HTML-дашборд
-python scripts/report.py --html --output dashboard.html
+python scripts/report_cli.py --html --output dashboard.html
 
 # JSON для CI
-python scripts/report.py --json --output report.json
+python scripts/report_cli.py --json --output report.json
 
 # Только проблемы
-python scripts/report.py --strict
+python scripts/report_cli.py --strict
 ```
 
 ### `ci-check.py` — CI-скрипт
@@ -60,5 +61,13 @@ python scripts/ci-check.py
 
 | Workflow | Файл | Когда |
 |----------|------|-------|
-| Prompt CI | `.github/workflows/prompt-ci.yml` | PR/push |
+| Prompt CI | `.github/workflows/prompt-ci.yml` | PR/push (validate + metrics) |
 | Dashboard Update | `.github/workflows/dashboard-update.yml` | Monthly/Manual |
+
+## Entry points (pip install -e .)
+
+| Команда | Модуль |
+|---------|--------|
+| `prompt-validate` | `scripts.validate:main` |
+| `prompt-metrics` | `scripts.metrics.__main__:main` |
+| `prompt-report` | `scripts.report_cli:main` |

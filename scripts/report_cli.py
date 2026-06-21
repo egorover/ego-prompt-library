@@ -2,11 +2,13 @@
 """CLI entry point for report generation.
 
 Использование:
-    python scripts/report.py                          # Markdown отчёт
-    python scripts/report.py --output report.md       # в файл
-    python scripts/report.py --json                   # JSON-формат
-    python scripts/report.py --html                   # HTML-формат
-    python scripts/report.py --strict                 # только critical/warning
+    python scripts/report_cli.py                          # Markdown отчёт
+    python scripts/report_cli.py --output report.md       # в файл
+    python scripts/report_cli.py --json                   # JSON-формат
+    python scripts/report_cli.py --html                   # HTML-формат
+    python scripts/report_cli.py --strict                 # только critical/warning
+
+    python scripts/report.py ...                          # wrapper → report_cli
 """
 
 import argparse

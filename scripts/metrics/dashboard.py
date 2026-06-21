@@ -7,7 +7,7 @@ Uses PromptMetrics dataclass to generate markdown dashboard files.
 from datetime import date
 from pathlib import Path
 
-from ..logger import get_logger
+from ._imports import get_logger
 from .models import PromptMetrics
 
 logger = get_logger(__name__)

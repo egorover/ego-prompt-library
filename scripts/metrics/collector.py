@@ -14,8 +14,7 @@ import re
 from datetime import date
 from pathlib import Path
 
-from ..logger import get_logger
-from ..shared import read_file, parse_status
+from ._imports import get_logger, parse_status, read_file
 from .parsers import parse_latency, parse_quality, parse_test_results
 from .models import PromptMetrics
 

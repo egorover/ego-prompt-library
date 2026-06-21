@@ -54,7 +54,7 @@
 ## Description          — Описание роли (2-3 абзаца)
 ## Input / Output       — Входы и выходы (таблицы)
 ## Scope & Boundaries   — Что входит / не входит
-## Constraints          — Ограничения и антипаттерны
+## Constraints & Anti-Patterns — Ограничения и антипаттерны
 ## Usage Examples       — Примеры использования
 ## Validation Status    — Статус валидации по критериям
 ## Related Files        — Ссылки на связанные файлы

@@ -33,15 +33,14 @@
 | Версионирование (SemVer) | ✅ Готово | card.md + changelog.md |
 | Тесты для каждой роли | ✅ Готово | validate.py + test-cases.md |
 | CI/CD воркфлоу | ✅ Готово | 2 workflow-файла в `.github/` |
-| Quality gates в коде | ✅ Готово | report.py + ci-check.py |
-| **Quarterly Review** | ⚠️ Не проводился | Первый review запланировать на Q3 2026 |
+| Quality gates в коде | ✅ Готово | report_cli.py + ci-check.py |
+| **Quarterly Review** | ✅ Проведён | [2026-Q2 review](docs/quarterly-reviews/2026-Q2.md) |
 | **Deprecation process** | ✅ Задокументирован | Процесс в governance.md, ни один промпт не требует deprecation |
-| **Production metrics** | 🟢 Собраны | 3 оценки у python-architect (avg 4.7), 5 у python-dev (avg 4.8) |
+| **Production metrics** | 🟢 Собраны | 3 оценки у python-architect (avg 4.6), 5 у python-dev (avg 4.8) |
 
-**Для получения ✅ — выполнить 2 шага:**
+**Для получения ✅ — выполнить 1 шаг:**
 
-1. Провести первый Quarterly Review (проверить актуальность обоих промптов)
-2. Продолжать собирать quality-оценки после каждого использования (цель: ≥ 10 оценок на роль)
+1. Продолжать собирать quality-оценки после каждого использования (цель: ≥ 10 оценок на роль)
 
 ## 🏗 Архитектура
 
@@ -80,7 +79,8 @@ ego-prompt-library/
     ├── validate.py            # CLI-валидатор структуры
     ├── ci-check.py            # CI-скрипт для GitHub Actions
     ├── metrics-collector.py   # Сбор метрик из всех ролей
-    ├── report.py              # Генерация отчётов (MD/HTML/JSON)
+    ├── report_cli.py          # Генерация отчётов (MD/HTML/JSON)
+    ├── report.py              # Wrapper → report_cli.py
     └── README.md
 ```
 
@@ -128,7 +128,6 @@ ego-prompt-library/
 |--------|--------|--------|----------|
 | [python-architect](prompts/python-architect/) | v1.1.0 | ✅ validated | AI-роль для проектирования архитектуры Python-проектов |
 | [python-dev](prompts/python-dev/) | v1.0.0 | ✅ validated | AI-роль для написания производственного Python-кода |
-| [python-dev](prompts/python-dev/) | v1.0.0 | ✅ validated | AI-роль для написания производственного Python-кода |
 
 ## 🛠 Scripts
 
@@ -164,20 +163,21 @@ python scripts/metrics-collector.py --dashboard
 python scripts/metrics-collector.py --all --json > metrics.json
 ```
 
-### `report.py` — Генерация отчётов
+### `report_cli.py` — Генерация отчётов
 
 ```bash
 # Markdown-отчёт
-python scripts/report.py --output report.md
+python scripts/report_cli.py --output report.md
+# или: python scripts/report_cli.py --output report.md
 
 # HTML-дашборд
-python scripts/report.py --html --output dashboard.html
+python scripts/report_cli.py --html --output dashboard.html
 
 # JSON для CI
-python scripts/report.py --json --output report.json
+python scripts/report_cli.py --json --output report.json
 
 # Только проблемы
-python scripts/report.py --strict
+python scripts/report_cli.py --strict
 ```
 
 ### `ci-check.py` — CI-скрипт
@@ -221,7 +221,7 @@ python scripts/validate.py prompts/<role-name>
 python scripts/metrics-collector.py prompts/<role-name>
 
 # 5. Отчёт
-python scripts/report.py --output report.md
+python scripts/report_cli.py --output report.md
 ```
 
 ## 🤝 Governance
