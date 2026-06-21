@@ -33,7 +33,7 @@
 - **Criteria:** Стратегия покрывает все уровни, есть конкретные команды/настройки
 - **Status:** ✅
 
-### TC-004: Архитектурные границы в多层ной системе
+### TC-004: Архитектурные границы в многослойной системе
 
 - **Input:** "Есть система с domain / application / infrastructure слоями. Domain вызывает application, application вызывает infrastructure. Но иногда infrastructure напрямую обращается к domain через глобальные переменные."
 - **Expected:** Выявлена проблема circular dependency через globals, предложены решения: DI, interfaces, event-based коммуникация
