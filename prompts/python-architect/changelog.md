@@ -23,12 +23,12 @@
 
 ---
 
-## [v1.0.0] — 2026-06-21
+## [v1.0.0] — 2026-06-18
 
 | Field    | Value              |
 |----------|--------------------|
 | Version  | v1.0.0             |
-| Date     | 2026-06-21         |
+| Date     | 2026-06-18        |
 | Author   | ego-prompt-library |
 | Type     | feat               |
 | Summary  | Initial version    |

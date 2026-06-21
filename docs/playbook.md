@@ -102,13 +102,13 @@
 ```markdown
 ## [v1.1.0] — 2026-06-21
 
-| Field    | Value              |
-|----------|--------------------|
-| Version  | v1.1.0             |
-| Date     | 2026-06-21         |
-| Author   | <author>           |
+| Field    | Value                                       |
+|----------|---------------------------------------------|
+| Version  | v1.1.0                                      |
+| Date     | 2026-06-21                                  |
+| Author   | <author>                                    |
 | Type     | feat / fix / refactor / docs / test / chore |
-| Summary  | <краткое описание> |
+| Summary  | <краткое описание>                          |
 
 ### Changes
 - ...
