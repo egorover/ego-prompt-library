@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import List
 
 from metrics.models import PromptMetrics, Issue
+from report.utils import compute_summary
 
 
 def generate_html_report(metrics_list: List[PromptMetrics], issues: List[Issue]) -> str:
@@ -23,9 +24,11 @@ def generate_html_report(metrics_list: List[PromptMetrics], issues: List[Issue])
         HTML-formatted string.
     """
     now = date.today().strftime("%Y-%m-%d %H:%M")
-    critical_count = sum(1 for i in issues if i.severity == "critical")
-    warning_count = sum(1 for i in issues if i.severity == "warning")
-    healthy_count = sum(1 for m in metrics_list if m.test_pass_rate >= 95 and m.latency_p50 < 15)
+    summary = compute_summary(metrics_list, issues)
+
+    critical_count = summary["critical_issues"]
+    warning_count = summary["warning_issues"]
+    healthy_count = summary["healthy"]
 
     # Build per-prompt rows
     rows = []

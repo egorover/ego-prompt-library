@@ -14,10 +14,10 @@ import re
 from datetime import date
 from pathlib import Path
 
-from logger import get_logger
-from shared import read_file, parse_status
-from metrics.parsers import parse_latency, parse_quality, parse_test_results
-from metrics.models import PromptMetrics
+from ..logger import get_logger
+from ..shared import read_file, parse_status
+from .parsers import parse_latency, parse_quality, parse_test_results
+from .models import PromptMetrics
 
 logger = get_logger(__name__)
 

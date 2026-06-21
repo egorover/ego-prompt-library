@@ -2,8 +2,11 @@
 
 ## Quality Log
 
-| Date | User | Relevance | Completeness | Structure | Value | Scenario | Notes | Avg |
-|------|------|-----------|--------------|-----------|-------|----------|-------|-----|
+| Date       | User  | Relevance | Completeness | Structure | Value | Scenario         | Notes             | Avg |
+|------------|-------|-----------|--------------|-----------|-------|------------------|-------------------|-----|
+| 2026-06-21 | admin | 5         | 4            | 5         | 5     | Architecture audit | Clean architecture | 4.8 |
+| 2026-06-21 | admin | 5         | 5            | 4         | 4     | New project design | Modular monolith  | 4.5 |
+| 2026-06-18 | admin | 4         | 4            | 5         | 5     | Refactoring plan | DDD boundaries    | 4.5 |
 
 > Оценивай после каждого использования: 1 (плохо) — 5 (отлично).
 > - **Relevance** — насколько ответ релевантен запросу
@@ -14,6 +17,6 @@
 
 ## Summary
 
-- **Average Rating:** —
-- **Total Ratings:** 0
-- **Trend:** —
+- **Average Rating:** 4.6
+- **Total Ratings:** 3
+- **Trend:** → стабильно

@@ -62,7 +62,7 @@
 ## Description
 ## Input / Output
 ## Scope & Boundaries
-## Constraints
+## Constraints & Anti-Patterns
 ## Usage Examples
 ## Validation Status
 ## Related Files

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import List
 
 from metrics.models import PromptMetrics, Issue
+from report.utils import compute_summary
 
 
 def generate_json_report(
@@ -30,6 +31,8 @@ def generate_json_report(
     if strict:
         issues = [i for i in issues if i.severity in ("critical", "warning")]
 
+    summary = compute_summary(metrics_list, issues)
+
     output = {
         "generated_at": datetime.now().isoformat(),
         "prompts": [m.to_dict() for m in metrics_list],
@@ -43,12 +46,7 @@ def generate_json_report(
             }
             for i in issues
         ],
-        "summary": {
-            "total_prompts": len(metrics_list),
-            "healthy": sum(1 for m in metrics_list if m.test_pass_rate >= 95),
-            "critical_issues": sum(1 for i in issues if i.severity == "critical"),
-            "warning_issues": sum(1 for i in issues if i.severity == "warning"),
-        },
+        "summary": summary,
     }
 
     return json.dumps(output, indent=2, ensure_ascii=False)

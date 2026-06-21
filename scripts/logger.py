@@ -13,7 +13,18 @@ from typing import Optional
 from rich.console import Console
 from rich.logging import RichHandler
 
-from config import config
+# Глобальная переменная для уровня логирования
+_log_level: str = "INFO"
+
+
+def set_log_level(level: str) -> None:
+    """Устанавливает глобальный уровень логирования.
+
+    Args:
+        level: Уровень логирования (DEBUG/INFO/WARNING/ERROR/CRITICAL).
+    """
+    global _log_level
+    _log_level = level.upper()
 
 
 def setup_logger(
@@ -31,7 +42,7 @@ def setup_logger(
     Returns:
         Настроенный logging.Logger.
     """
-    log_level = level or config.log_level
+    log_level = level or _log_level
 
     logger = logging.getLogger(name)
     logger.setLevel(getattr(logging, log_level.upper(), logging.INFO))

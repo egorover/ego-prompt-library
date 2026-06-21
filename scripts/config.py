@@ -115,5 +115,13 @@ def configure_console_encoding() -> None:
             os.environ["PYTHONUTF8"] = "1"
 
 
+def configure_logging() -> None:
+    """Настраивает глобальный уровень логирования из конфига."""
+    from logger import set_log_level
+
+    set_log_level(config.log_level)
+
+
 # Инициализация при импорте
 configure_console_encoding()
+configure_logging()

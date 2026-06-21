@@ -20,8 +20,8 @@ dependencies = [
 dev = ["mypy>=1.8", "ruff>=0.2"]
 
 [project.scripts]
-prompt-validate = "scripts.validate_cli:main"
-prompt-metrics = "scripts.metrics_collector_cli:main"
+prompt-validate = "scripts.validate:main"
+prompt-metrics = "scripts.metrics.collector:main"
 prompt-report = "scripts.report_cli:main"
 
 [tool.setuptools.packages.find]

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import List
 
 from metrics.models import PromptMetrics, Issue
+from report.utils import compute_summary
 
 
 def generate_md_report(metrics_list: List[PromptMetrics], issues: List[Issue]) -> str:
@@ -23,10 +24,12 @@ def generate_md_report(metrics_list: List[PromptMetrics], issues: List[Issue]) -
         Markdown-formatted string.
     """
     now = date.today().strftime("%Y-%m-%d")
-    critical_count = sum(1 for i in issues if i.severity == "critical")
-    warning_count = sum(1 for i in issues if i.severity == "warning")
-    info_count = sum(1 for i in issues if i.severity == "info")
-    healthy_count = sum(1 for m in metrics_list if m.test_pass_rate >= 95 and m.latency_p50 < 15)
+    summary = compute_summary(metrics_list, issues)
+
+    critical_count = summary["critical_issues"]
+    warning_count = summary["warning_issues"]
+    info_count = summary["info_issues"]
+    healthy_count = summary["healthy"]
 
     lines = [
         "# Prompt Library Report",

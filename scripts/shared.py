@@ -11,7 +11,10 @@ Provides:
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from logger import get_logger
+try:
+    from .logger import get_logger
+except ImportError:
+    from logger import get_logger
 
 logger = get_logger(__name__)
 

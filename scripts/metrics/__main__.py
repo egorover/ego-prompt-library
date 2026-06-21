@@ -5,9 +5,9 @@ from pathlib import Path
 
 from rich.console import Console
 
-from logger import get_logger
-from metrics.collector import collect_metrics
-from shared import discover_prompts
+from ..logger import get_logger
+from .collector import collect_metrics
+from ..shared import discover_prompts
 
 logger = get_logger(__name__)
 console = Console()
@@ -15,7 +15,7 @@ console = Console()
 
 def main() -> None:
     """Collect and display metrics for all prompts."""
-    library_root = Path(__file__).parent.parent
+    library_root = Path(__file__).parent.parent.parent
     prompts = discover_prompts(library_root)
 
     if not prompts:
