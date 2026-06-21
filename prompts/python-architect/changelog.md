@@ -1,11 +1,11 @@
 # Python Architect — Changelog
 
-## [v1.1.0] — 2025-07-12
+## [v1.1.0] — 2026-06-21
 
 | Field    | Value              |
 |----------|--------------------|
 | Version  | v1.1.0             |
-| Date     | 2025-07-12         |
+| Date     | 2026-06-21         |
 | Author   | ego-prompt-library |
 | Type     | feat               |
 | Summary  | Complete prompt rewrite with 7-section structure |
@@ -23,12 +23,12 @@
 
 ---
 
-## [v1.0.0] — 2025-07-12
+## [v1.0.0] — 2026-06-21
 
 | Field    | Value              |
 |----------|--------------------|
 | Version  | v1.0.0             |
-| Date     | 2025-07-12         |
+| Date     | 2026-06-21         |
 | Author   | ego-prompt-library |
 | Type     | feat               |
 | Summary  | Initial version    |

@@ -77,8 +77,8 @@
 | Version    | v1.0.0                   |
 | Author     | <author>                 |
 | Status     | validated                |
-| Created    | 2025-07-12               |
-| Updated    | 2025-07-12               |
+| Created    | 2026-06-21               |
+| Updated    | 2026-06-21               |
 | Category   | architecture             |
 ```
 
@@ -122,12 +122,12 @@
 ```markdown
 # <ROLE NAME> — Changelog
 
-## [v1.0.0] — 2025-07-12
+## [v1.0.0] — 2026-06-21
 
 | Field    | Value              |
 |----------|--------------------|
 | Version  | v1.0.0             |
-| Date     | 2025-07-12         |
+| Date     | 2026-06-21         |
 | Author   | <author>           |
 | Type     | feat               |
 | Summary  | Initial version    |
