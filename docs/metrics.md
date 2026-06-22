@@ -66,7 +66,6 @@ python scripts/metrics-collector.py --all --json > metrics.json
 
 ```bash
 python scripts/report_cli.py --output report.md
-# или: python scripts/report.py --output report.md
 ```
 
 ### HTML-дашборд

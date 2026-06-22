@@ -80,7 +80,6 @@ ego-prompt-library/
     ├── ci-check.py            # CI-скрипт для GitHub Actions
     ├── metrics-collector.py   # Сбор метрик из всех ролей
     ├── report_cli.py          # Генерация отчётов (MD/HTML/JSON)
-    ├── report.py              # Wrapper → report_cli.py
     └── README.md
 ```
 

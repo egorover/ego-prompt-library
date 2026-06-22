@@ -38,7 +38,8 @@ quarterly-dashboard.html
 quarterly-report.json
 metrics-data.json
 validation-results.json
-*.json
+# Генерируемые JSON-артефакты (но не тестовые/конфигурационные)
+tests/output/*.json
 
 # Test
 .pytest_cache/
