@@ -9,8 +9,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
-from metrics.models import PromptMetrics, Issue
-from report.utils import compute_summary
+try:
+    from ..metrics.models import PromptMetrics, Issue
+except ImportError:
+    from scripts.metrics.models import PromptMetrics, Issue
+from .utils import compute_summary
 
 
 def generate_json_report(

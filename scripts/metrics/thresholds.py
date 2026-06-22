@@ -1,34 +1,32 @@
-"""Metrics thresholds — from config with shared.py fallback."""
-
-try:
-    from ..config import config
-except ImportError:
-    from config import config
+"""Metrics thresholds — defaults from shared.py (config.py fallback removed)."""
 
 from ._imports import METRICS_THRESHOLDS
 
+# Use shared.py thresholds directly — avoids circular import with config.py
+DEFAULT_METRICS_THRESHOLDS = METRICS_THRESHOLDS
+
 
 def get_metrics_thresholds() -> dict[str, dict]:
-    """Return quality gate thresholds (config overrides defaults)."""
-    t = config.metrics_thresholds
+    """Return quality gate thresholds from shared.py.
+
+    Returns:
+        Dictionary with threshold values for each metric.
+    """
+    t = METRICS_THRESHOLDS
     return {
         "test_pass_rate": {
-            "warning": t.test_pass_rate_warning,
-            "critical": t.test_pass_rate_critical,
+            "warning": t["test_pass_rate"]["warning"],
+            "critical": t["test_pass_rate"]["critical"],
         },
         "latency_p50": {
-            "warning": t.latency_p50_warning,
-            "critical": t.latency_p50_critical,
+            "warning": t["latency_p50"]["warning"],
+            "critical": t["latency_p50"]["critical"],
         },
         "quality_avg": {
-            "warning": t.quality_avg_warning,
-            "critical": t.quality_avg_critical,
+            "warning": t["quality_avg"]["warning"],
+            "critical": t["quality_avg"]["critical"],
         },
         "changes_per_month": {
-            "warning": t.changes_per_month_warning,
+            "warning": t["changes_per_month"]["warning"],
         },
     }
-
-
-# Backward-compatible alias for code that still imports METRICS_THRESHOLDS
-DEFAULT_METRICS_THRESHOLDS = METRICS_THRESHOLDS

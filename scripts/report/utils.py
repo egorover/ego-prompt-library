@@ -7,7 +7,22 @@ Provides:
 
 from typing import List
 
-from metrics.models import PromptMetrics, Issue
+try:
+    from ..metrics.models import PromptMetrics, Issue
+except ImportError:
+    from scripts.metrics.models import PromptMetrics, Issue
+except ImportError:
+    from scripts.metrics.models import PromptMetrics, Issue
+except ImportError:
+    from scripts.metrics.models import PromptMetrics, Issue
+except ImportError:
+    from scripts.metrics.models import PromptMetrics, Issue
+except ImportError:
+    from scripts.metrics.models import PromptMetrics, Issue
+except ImportError:
+    from scripts.metrics.models import PromptMetrics, Issue
+except ImportError:
+    from scripts.metrics.models import PromptMetrics, Issue
 
 
 def compute_summary(

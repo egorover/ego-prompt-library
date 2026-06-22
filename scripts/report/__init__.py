@@ -5,7 +5,6 @@ Provides:
 - JSON report generation
 - HTML report generation
 - Markdown report generation
-- CLI entry point
 - utils for shared report logic
 """
 
@@ -15,10 +14,10 @@ try:
     from .md_report import generate_md_report
     from .utils import compute_summary
 except ImportError:
-    from report.json_report import generate_json_report
-    from report.html_report import generate_html_report
-    from report.md_report import generate_md_report
-    from report.utils import compute_summary
+    from scripts.report.json_report import generate_json_report
+    from scripts.report.html_report import generate_html_report
+    from scripts.report.md_report import generate_md_report
+    from scripts.report.utils import compute_summary
 
 __all__ = [
     "generate_json_report",

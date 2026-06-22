@@ -4,13 +4,53 @@
 Uses PromptMetrics dataclass to generate markdown dashboard files.
 """
 
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
+from typing import Dict, Any
 
 from ._imports import get_logger
 from .models import PromptMetrics
 
 logger = get_logger(__name__)
+
+
+def _get_month_names() -> list[str]:
+    """Return last 3 month names in Russian."""
+    month_names = [
+        "январь", "февраль", "март", "апрель", "май", "июнь",
+        "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"
+    ]
+    now = date.today()
+    months = []
+    for i in range(2, -1, -1):
+        month_num = (now.month - 1 - i) % 12 + 1
+        year = now.year if month_num <= now.month else now.year - 1
+        months.append(f"{year}-{month_num:02d}")
+    return months
+
+
+def _build_trend_rows(metrics: PromptMetrics, months: list[str]) -> list[str]:
+    """Build trend rows for dashboard. Uses current metrics for current month,
+    and placeholder data for previous months (historical data would require
+    storing past snapshots)."""
+    now = date.today()
+    rows = []
+    for i, month_key in enumerate(reversed(months)):
+        year, month = map(int, month_key.split("-"))
+        month_name = [
+            "январь", "февраль", "март", "апрель", "май", "июнь",
+            "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"
+        ][month - 1]
+        
+        if i == 2:  # Current month
+            rows.append(
+                f"| {month_name} ({year})  | {metrics.usage_count}     | {metrics.test_pass_rate}   | {int(metrics.latency_p50)}s      | {metrics.quality_avg if metrics.quality_count > 0 else '—'}       | {metrics.open_issues}      |"
+            )
+        else:
+            rows.append(
+                f"| {month_name} ({year})  | —     | —   | —      | —       | —      |"
+            )
+    return rows
 
 
 def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
@@ -25,7 +65,10 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
         logger.debug("Dashboard not found for %s, skipping", prompt_dir.name)
         return
 
-    now = date.today().strftime("%Y-%m-%d")
+    now = date.today()
+    now_str = now.strftime("%Y-%m-%d")
+    months = _get_month_names()
+    trend_rows = _build_trend_rows(metrics, months)
 
     test_status = "🟢" if metrics.test_pass_rate >= 95 else ("🟡" if metrics.test_pass_rate >= 80 else "🔴")
     latency_status = "🟢" if metrics.latency_p50 < 15 else ("🟡" if metrics.latency_p50 < 30 else "🔴")
@@ -33,7 +76,7 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
 
     content = f"""# Dashboard: {metrics.name}
 
-## Summary ({now})
+## Summary ({now_str})
 
 | Метрика            | Значение | Статус | Тренд  |
 |--------------------|----------|--------|--------|
@@ -48,7 +91,7 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
 
 | Месяц    | Usage | Test% | Latency | Quality | Issues |
 |----------|-------|-------|---------|---------|--------|
-| {now[:7]}  | {metrics.usage_count}     | {metrics.test_pass_rate}   | {int(metrics.latency_p50)}s      | {metrics.quality_avg if metrics.quality_count > 0 else '—'}       | {metrics.open_issues}      |
+{chr(10).join(trend_rows)}
 
 > 📌 Дашборд обновляется автоматически через CI.
 """
