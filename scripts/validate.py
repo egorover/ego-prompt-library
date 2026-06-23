@@ -15,15 +15,18 @@ import re
 import sys
 from pathlib import Path
 
-from logger import get_logger
-from shared import (
+from _imports import (
+    METRICS_THRESHOLDS,
+    config,
+    discover_prompts,
+    get_logger,
+    parse_status,
+    read_file,
     REQUIRED_FILES,
     REQUIRED_PROMPT_SECTIONS,
     REQUIRED_CARD_SECTIONS,
     REQUIRED_METADATA_FIELDS,
     VALID_STATUSES,
-    read_file,
-    discover_prompts,
     ValidationResult,
 )
 

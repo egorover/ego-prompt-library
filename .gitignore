@@ -1,53 +1,39 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environments
+.venv/
+env/
+venv/
+
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
+
+# Cache
+.mypy_cache/
+.ruff_cache/
+
+# Environment
+.env
+.env.local
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Env
-.env
-.env.local
-
-# Python (для scripts/)
-__pycache__/
-*.pyc
-*.pyo
-*.egg-info/
-dist/
-build/
-*.egg
-pip-wheel-metadata/
-.eggs/
-
-# Virtual environments
-venv/
-.venv/
-env/
-
-# Reports (генерируемые)
+# Reports (generated)
 report.md
 dashboard.html
 report.json
-quarterly-report.md
-quarterly-dashboard.html
-quarterly-report.json
 metrics-data.json
 validation-results.json
-
-# Test
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Temp
-*.tmp
-tmp/
-
-# Secrets (на всякий случай)
-*.env
-

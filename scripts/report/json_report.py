@@ -12,7 +12,11 @@ from typing import List
 try:
     from ..metrics.models import PromptMetrics, Issue
 except ImportError:
-    from scripts.metrics.models import PromptMetrics, Issue
+    try:
+        from metrics.models import PromptMetrics, Issue
+    except ImportError:
+        from scripts.metrics.models import PromptMetrics, Issue
+
 from .utils import compute_summary
 
 

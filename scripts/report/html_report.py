@@ -12,7 +12,11 @@ from typing import List
 try:
     from ..metrics.models import PromptMetrics, Issue
 except ImportError:
-    from scripts.metrics.models import PromptMetrics, Issue
+    try:
+        from metrics.models import PromptMetrics, Issue
+    except ImportError:
+        from scripts.metrics.models import PromptMetrics, Issue
+
 from .utils import compute_summary
 
 
@@ -33,12 +37,11 @@ def generate_html_report(metrics_list: List[PromptMetrics], issues: List[Issue])
     warning_count = summary["warning_issues"]
     healthy_count = summary["healthy"]
 
-    # Build per-prompt rows
     rows = []
     for m in metrics_list:
         test_class = "green" if m.test_pass_rate >= 95 else ("yellow" if m.test_pass_rate >= 80 else "red")
         status_class = "green" if m.status == "validated" else ("yellow" if m.status == "testing" else "red")
-        quality_display = m.quality_avg if m.quality_count > 0 else "—"
+        quality_display = m.quality_avg if m.quality_count > 0 else "\u2014"
         rows.append(
             f"""                <tr>
                     <td><strong>{m.name}</strong></td>
@@ -51,19 +54,18 @@ def generate_html_report(metrics_list: List[PromptMetrics], issues: List[Issue])
                 </tr>"""
         )
 
-    # Build issues section
     issues_html = ""
     if issues:
         issues_items = []
         for issue in sorted(issues, key=lambda x: {"critical": 0, "warning": 1, "info": 2}[x.severity]):
             issues_items.append(
                 f"""            <div class="issue issue-{issue.severity}">
-                <strong>[{issue.severity.upper()}]</strong> {issue.prompt_name} — {issue.metric}<br>
+                <strong>[{issue.severity.upper()}]</strong> {issue.prompt_name} \u2014 {issue.metric}<br>
                 {issue.message}<br>
-                <em>→ {issue.recommendation}</em>
+                <em>\u2192 {issue.recommendation}</em>
             </div>"""
             )
-        issues_html = f"""        <h2>⚠️ Issues</h2>
+        issues_html = f"""        <h2>\u26a0\ufe0f Issues</h2>
         <div class="issues">
 {chr(10).join(issues_items)}
         </div>"""
@@ -103,7 +105,7 @@ def generate_html_report(metrics_list: List[PromptMetrics], issues: List[Issue])
 </head>
 <body>
     <div class="container">
-        <h1>🔧 Prompt Library Dashboard</h1>
+        <h1>\ud83d\udee0\ufe0f Prompt Library Dashboard</h1>
         <p class="timestamp">Generated: {now}</p>
 
         <div class="summary">

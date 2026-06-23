@@ -12,7 +12,11 @@ from typing import List
 try:
     from ..metrics.models import PromptMetrics, Issue
 except ImportError:
-    from scripts.metrics.models import PromptMetrics, Issue
+    try:
+        from metrics.models import PromptMetrics, Issue
+    except ImportError:
+        from scripts.metrics.models import PromptMetrics, Issue
+
 from .utils import compute_summary
 
 
@@ -44,10 +48,10 @@ def generate_md_report(metrics_list: List[PromptMetrics], issues: List[Issue]) -
         "",
         "## Summary",
         "",
-        "| Метрика | Значение |",
+        "| \u041c\u0435\u0442\u0440\u0438\u043a\u0430 | \u0417\u043d\u0430\u0447\u0435\u043d\u0438\u0435 |",
         "|---------|----------|",
         f"| Total prompts | {len(metrics_list)} |",
-        f"| Healthy (tests ≥ 95%, latency < 15s) | {healthy_count}/{len(metrics_list)} |",
+        f"| Healthy (tests \u2265 95%, latency < 15s) | {healthy_count}/{len(metrics_list)} |",
         f"| Critical issues | {critical_count} |",
         f"| Warnings | {warning_count} |",
         f"| Info | {info_count} |",
@@ -62,12 +66,12 @@ def generate_md_report(metrics_list: List[PromptMetrics], issues: List[Issue]) -
         lines.extend([
             f"### {m.name} ({m.version}, {m.status})",
             "",
-            "| Метрика | Значение |",
+            "| \u041c\u0435\u0442\u0440\u0438\u043a\u0430 | \u0417\u043d\u0430\u0447\u0435\u043d\u0438\u0435 |",
             "|---------|----------|",
             f"| Test pass rate | {m.test_pass_rate}% |",
             f"| Latency P50 | {m.latency_p50}s |",
             f"| Latency P95 | {m.latency_p95}s |",
-            f"| Quality Avg | {m.quality_avg if m.quality_count > 0 else '—'} |",
+            f"| Quality Avg | {m.quality_avg if m.quality_count > 0 else '\u2014'} |",
             f"| Usage count | {m.usage_count} |",
             f"| Changes this month | {m.changes_this_month} |",
             "",
@@ -77,8 +81,8 @@ def generate_md_report(metrics_list: List[PromptMetrics], issues: List[Issue]) -
         lines.extend(["---", "", "## Issues", ""])
         for issue in sorted(issues, key=lambda x: {"critical": 0, "warning": 1, "info": 2}[x.severity]):
             lines.extend([
-                f"- **[{issue.severity.upper()}]** {issue.prompt_name} — {issue.metric}: {issue.message}",
-                f"  → {issue.recommendation}",
+                f"- **[{issue.severity.upper()}]** {issue.prompt_name} \u2014 {issue.metric}: {issue.message}",
+                f"  \u2192 {issue.recommendation}",
             ])
         lines.append("")
 

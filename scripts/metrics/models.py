@@ -6,10 +6,10 @@ Defines:
 - Issue: dataclass for quality gate violations
 """
 
-from dataclasses import dataclass
+from pydantic import BaseModel, Field
 
 
-class PromptMetrics:
+class PromptMetrics(BaseModel):
     """All collected metrics for a single prompt.
 
     Attributes:
@@ -29,43 +29,20 @@ class PromptMetrics:
         status: Статус (draft/testing/validated/deprecated).
     """
 
-    __slots__ = (
-        "name", "usage_count", "test_pass_rate", "test_total", "test_passed",
-        "latency_p50", "latency_p95", "latency_p99", "quality_avg",
-        "quality_count", "changes_this_month", "open_issues", "version", "status",
-    )
-
-    def __init__(
-        self,
-        name: str,
-        usage_count: int = 0,
-        test_pass_rate: float = 100.0,
-        test_total: int = 0,
-        test_passed: int = 0,
-        latency_p50: float = 0.0,
-        latency_p95: float = 0.0,
-        latency_p99: float = 0.0,
-        quality_avg: float = 0.0,
-        quality_count: int = 0,
-        changes_this_month: int = 0,
-        open_issues: int = 0,
-        version: str = "",
-        status: str = "",
-    ) -> None:
-        self.name = name
-        self.usage_count = usage_count
-        self.test_pass_rate = test_pass_rate
-        self.test_total = test_total
-        self.test_passed = test_passed
-        self.latency_p50 = latency_p50
-        self.latency_p95 = latency_p95
-        self.latency_p99 = latency_p99
-        self.quality_avg = quality_avg
-        self.quality_count = quality_count
-        self.changes_this_month = changes_this_month
-        self.open_issues = open_issues
-        self.version = version
-        self.status = status
+    name: str
+    usage_count: int = Field(default=0, ge=0)
+    test_pass_rate: float = Field(default=100.0, ge=0.0, le=100.0)
+    test_total: int = Field(default=0, ge=0)
+    test_passed: int = Field(default=0, ge=0)
+    latency_p50: float = Field(default=0.0, ge=0.0)
+    latency_p95: float = Field(default=0.0, ge=0.0)
+    latency_p99: float = Field(default=0.0, ge=0.0)
+    quality_avg: float = Field(default=0.0, ge=0.0, le=5.0)
+    quality_count: int = Field(default=0, ge=0)
+    changes_this_month: int = Field(default=0, ge=0)
+    open_issues: int = Field(default=0, ge=0)
+    version: str = Field(default="")
+    status: str = Field(default="")
 
     def to_dict(self) -> dict:
         """Конвертирует метрики в словарь для JSON-сериализации.
@@ -95,8 +72,7 @@ class PromptMetrics:
         )
 
 
-@dataclass
-class Issue:
+class Issue(BaseModel):
     """Quality gate violation.
 
     Attributes:

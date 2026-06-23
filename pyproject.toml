@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "ego-prompt-library"
 version = "1.0.0"
-description = "Production-ready фреймворк для разработки, тестирования и управления AI prompt-ролями"
+description = "Production-ready framework for AI prompt roles management"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Internal"}
@@ -23,13 +23,10 @@ dev = ["mypy>=1.8", "ruff>=0.2", "pytest>=8.0"]
 prompt-validate = "scripts.validate:main"
 prompt-metrics = "scripts.metrics.__main__:main"
 prompt-report = "scripts.report_cli:main"
+metrics-collector = "scripts.metrics.__main__:main"
 
 [tool.setuptools]
-package-dir = {"" = "."}
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["scripts*"]
+packages = ["scripts"]
 
 [tool.mypy]
 python_version = "3.10"

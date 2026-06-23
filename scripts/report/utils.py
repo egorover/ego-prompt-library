@@ -5,29 +5,18 @@ Provides:
 - compute_summary: calculates summary statistics from metrics and issues
 """
 
-from typing import List
-
 try:
     from ..metrics.models import PromptMetrics, Issue
 except ImportError:
-    from scripts.metrics.models import PromptMetrics, Issue
-except ImportError:
-    from scripts.metrics.models import PromptMetrics, Issue
-except ImportError:
-    from scripts.metrics.models import PromptMetrics, Issue
-except ImportError:
-    from scripts.metrics.models import PromptMetrics, Issue
-except ImportError:
-    from scripts.metrics.models import PromptMetrics, Issue
-except ImportError:
-    from scripts.metrics.models import PromptMetrics, Issue
-except ImportError:
-    from scripts.metrics.models import PromptMetrics, Issue
+    try:
+        from metrics.models import PromptMetrics, Issue
+    except ImportError:
+        from scripts.metrics.models import PromptMetrics, Issue
 
 
 def compute_summary(
-    metrics_list: List[PromptMetrics],
-    issues: List[Issue],
+    metrics_list: "list[PromptMetrics]",
+    issues: "list[Issue]",
 ) -> dict:
     """Вычисляет сводную статистику для отчёта.
 

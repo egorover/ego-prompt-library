@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Shared utilities for prompt library scripts.
+Shared utilities for prompt library.
 
 Provides:
 - Common constants (file names, sections, thresholds)
@@ -60,7 +60,7 @@ REQUIRED_METADATA_FIELDS: list[str] = [
 
 VALID_STATUSES: set[str] = {"draft", "testing", "validated", "deprecated"}
 
-# ── Metrics thresholds ────────────────────────────────────────────────────
+# ── Metrics thresholds (used by validate.py for warnings) ─────────────────
 
 METRICS_THRESHOLDS: dict[str, dict] = {
     "test_pass_rate": {"warning": 95, "critical": 80},
@@ -138,9 +138,12 @@ def parse_status(card_content: str) -> str:
             continue
         if in_metadata and line.startswith("##"):
             break
-        for status in VALID_STATUSES:
-            if f"| {status} " in line or f"| {status}|" in line:
-                return status
+        if in_metadata and "|" in line:
+            for status in VALID_STATUSES:
+                if f"| {status}|" in line or f"| {status} " in line:
+                    return status
+                if "| Status" in line and status in line:
+                    return status
     return "unknown"
 
 
