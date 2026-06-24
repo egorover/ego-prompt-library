@@ -8,7 +8,7 @@
 ![Rich](https://img.shields.io/badge/Rich-13.x%2B-6666ff)
 ![License](https://img.shields.io/badge/License-Internal-red)
 ![Status](https://img.shields.io/badge/Status-Level%203%2B%20Library%20Asset-orange)
-![Version](https://img.shields.io/badge/Version-1.0.0-blue)
+![Version](https://img.shields.io/badge/Version-1.1.0-blue)
 ![CI](https://img.shields.io/badge/CI-Validate%20✅-green)
 
 ## 🎯 Что это такое
