@@ -35,7 +35,13 @@ def main() -> None:
 
         # Inline validation for CI (avoid circular imports)
         try:
-            from _imports import read_file, REQUIRED_FILES, REQUIRED_PROMPT_SECTIONS, REQUIRED_CARD_SECTIONS, REQUIRED_METADATA_FIELDS, VALID_STATUSES
+            from _imports import (
+                read_file,
+                REQUIRED_FILES,
+                REQUIRED_PROMPT_SECTIONS,
+                REQUIRED_CARD_SECTIONS,
+                VALID_STATUSES,
+            )
             import re
 
             # Check files

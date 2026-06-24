@@ -10,12 +10,12 @@ from pathlib import Path
 from typing import List
 
 try:
-    from ..metrics.models import PromptMetrics, Issue
+    from ..metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
 except ImportError:
     try:
-        from metrics.models import PromptMetrics, Issue
+        from metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
     except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue
+        from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
 
 from .utils import compute_summary
 

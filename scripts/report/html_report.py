@@ -10,12 +10,12 @@ from pathlib import Path
 from typing import List
 
 try:
-    from ..metrics.models import PromptMetrics, Issue
+    from ..metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
 except ImportError:
     try:
-        from metrics.models import PromptMetrics, Issue
+        from metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
     except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue
+        from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
 
 from .utils import compute_summary
 
@@ -119,11 +119,11 @@ def generate_html_report(metrics_list: List[PromptMetrics], issues: List[Issue])
             </div>
             <div class="card">
                 <h3>Critical Issues</h3>
-                <div class="value {'red' if critical_count > 0 else 'green'}">{critical_count}</div>
+                <div class="value {"red" if critical_count > 0 else "green"}">{critical_count}</div>
             </div>
             <div class="card">
                 <h3>Warnings</h3>
-                <div class="value {'yellow' if warning_count > 0 else 'green'}">{warning_count}</div>
+                <div class="value {"yellow" if warning_count > 0 else "green"}">{warning_count}</div>
             </div>
         </div>
 

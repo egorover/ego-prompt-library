@@ -6,12 +6,12 @@ Provides:
 """
 
 try:
-    from ..metrics.models import PromptMetrics, Issue
+    from ..metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
 except ImportError:
     try:
-        from metrics.models import PromptMetrics, Issue
+        from metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
     except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue
+        from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
 
 
 def compute_summary(
@@ -30,10 +30,7 @@ def compute_summary(
     critical_count = sum(1 for i in issues if i.severity == "critical")
     warning_count = sum(1 for i in issues if i.severity == "warning")
     info_count = sum(1 for i in issues if i.severity == "info")
-    healthy_count = sum(
-        1 for m in metrics_list
-        if m.test_pass_rate >= 95 and m.latency_p50 < 15
-    )
+    healthy_count = sum(1 for m in metrics_list if m.test_pass_rate >= 95 and m.latency_p50 < 15)
 
     return {
         "total_prompts": len(metrics_list),

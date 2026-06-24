@@ -7,7 +7,6 @@ Tests the complete flow:
 4. Generate reports
 """
 
-import pytest
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -26,7 +25,8 @@ class TestIntegrationPipeline:
         with TemporaryDirectory() as tmp:
             tmp_path = Path(tmp)
             # Создаём валидную структуру с правильными секциями
-            (tmp_path / "prompt.md").write_text("""# Test Role
+            (tmp_path / "prompt.md").write_text(
+                """# Test Role
 
 ## 1. Identity & Purpose
 Test purpose.
@@ -48,9 +48,12 @@ Test anti-patterns.
 
 ## 7. Quick Reference
 Test reference.
-""", encoding="utf-8")
+""",
+                encoding="utf-8",
+            )
 
-            (tmp_path / "card.md").write_text("""# Test Role — Card
+            (tmp_path / "card.md").write_text(
+                """# Test Role — Card
 
 ## Metadata
 | Field | Value |
@@ -83,9 +86,12 @@ Test validation.
 
 ## Related Files
 Test related.
-""", encoding="utf-8")
+""",
+                encoding="utf-8",
+            )
 
-            (tmp_path / "test-cases.md").write_text("""# Test Cases
+            (tmp_path / "test-cases.md").write_text(
+                """# Test Cases
 
 ## Test Suite Overview
 | Metric | Value |
@@ -106,13 +112,18 @@ Test related.
 
 ### TC-005: Test 5
 - **Status:** ✅
-""", encoding="utf-8")
+""",
+                encoding="utf-8",
+            )
 
-            (tmp_path / "changelog.md").write_text("""# Changelog
+            (tmp_path / "changelog.md").write_text(
+                """# Changelog
 
 ## [v1.0.0] — 2026-01-01
 Initial version.
-""", encoding="utf-8")
+""",
+                encoding="utf-8",
+            )
 
             # 1. Валидация
             result = validate_prompt(tmp_path)
@@ -147,8 +158,13 @@ Initial version.
             ),
         ]
         issues = [
-            Issue(severity="warning", prompt_name="test-role", metric="quality",
-                  message="Low quality", recommendation="Fix"),
+            Issue(
+                severity="warning",
+                prompt_name="test-role",
+                metric="quality",
+                message="Low quality",
+                recommendation="Fix",
+            ),
         ]
 
         report = generate_json_report(metrics, issues)
@@ -216,13 +232,12 @@ Initial version.
             PromptMetrics(name="role2", test_pass_rate=50.0, latency_p50=40.0),
         ]
         issues = [
-            Issue(severity="critical", prompt_name="role2", metric="test",
-                  message="Low", recommendation="Fix"),
-            Issue(severity="warning", prompt_name="role2", metric="latency",
-                  message="High", recommendation="Optimize"),
+            Issue(severity="critical", prompt_name="role2", metric="test", message="Low", recommendation="Fix"),
+            Issue(severity="warning", prompt_name="role2", metric="latency", message="High", recommendation="Optimize"),
         ]
 
         from report.utils import compute_summary
+
         summary = compute_summary(metrics, issues)
 
         assert summary["total_prompts"] == 2

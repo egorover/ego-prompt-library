@@ -1,4 +1,4 @@
-﻿"""Metrics thresholds — loaded from config.py (single source of truth)."""
+"""Metrics thresholds — loaded from config.py (single source of truth)."""
 
 try:
     from config import config
@@ -32,7 +32,7 @@ def get_metrics_thresholds() -> dict:
                     "warning": t.changes_per_month_warning,
                 },
             }
-        except Exception as e:
+        except Exception:
             pass
 
     # Fallback defaults
@@ -42,4 +42,3 @@ def get_metrics_thresholds() -> dict:
         "quality_avg": {"warning": 4.0, "critical": 3.0},
         "changes_per_month": {"warning": 2},
     }
-

@@ -10,12 +10,12 @@ from pathlib import Path
 from typing import List
 
 try:
-    from ..metrics.models import PromptMetrics, Issue
+    from ..metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
 except ImportError:
     try:
-        from metrics.models import PromptMetrics, Issue
+        from metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
     except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue
+        from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
 
 from .utils import compute_summary
 
@@ -63,27 +63,31 @@ def generate_md_report(metrics_list: List[PromptMetrics], issues: List[Issue]) -
     ]
 
     for m in metrics_list:
-        lines.extend([
-            f"### {m.name} ({m.version}, {m.status})",
-            "",
-            "| \u041c\u0435\u0442\u0440\u0438\u043a\u0430 | \u0417\u043d\u0430\u0447\u0435\u043d\u0438\u0435 |",
-            "|---------|----------|",
-            f"| Test pass rate | {m.test_pass_rate}% |",
-            f"| Latency P50 | {m.latency_p50}s |",
-            f"| Latency P95 | {m.latency_p95}s |",
-            f"| Quality Avg | {m.quality_avg if m.quality_count > 0 else '\u2014'} |",
-            f"| Usage count | {m.usage_count} |",
-            f"| Changes this month | {m.changes_this_month} |",
-            "",
-        ])
+        lines.extend(
+            [
+                f"### {m.name} ({m.version}, {m.status})",
+                "",
+                "| \u041c\u0435\u0442\u0440\u0438\u043a\u0430 | \u0417\u043d\u0430\u0447\u0435\u043d\u0438\u0435 |",
+                "|---------|----------|",
+                f"| Test pass rate | {m.test_pass_rate}% |",
+                f"| Latency P50 | {m.latency_p50}s |",
+                f"| Latency P95 | {m.latency_p95}s |",
+                f"| Quality Avg | {m.quality_avg if m.quality_count > 0 else '\u2014'} |",
+                f"| Usage count | {m.usage_count} |",
+                f"| Changes this month | {m.changes_this_month} |",
+                "",
+            ]
+        )
 
     if issues:
         lines.extend(["---", "", "## Issues", ""])
         for issue in sorted(issues, key=lambda x: {"critical": 0, "warning": 1, "info": 2}[x.severity]):
-            lines.extend([
-                f"- **[{issue.severity.upper()}]** {issue.prompt_name} \u2014 {issue.metric}: {issue.message}",
-                f"  \u2192 {issue.recommendation}",
-            ])
+            lines.extend(
+                [
+                    f"- **[{issue.severity.upper()}]** {issue.prompt_name} \u2014 {issue.metric}: {issue.message}",
+                    f"  \u2192 {issue.recommendation}",
+                ]
+            )
         lines.append("")
 
     return "\n".join(lines)

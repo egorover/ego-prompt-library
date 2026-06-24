@@ -1,8 +1,6 @@
 """Unit tests for prompt validation."""
 
-import pytest
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 from validate import (
     validate_files,
@@ -48,16 +46,18 @@ class TestValidatePromptStructure:
 
     def test_all_sections_present(self):
         """Если все секции есть — без ошибок."""
-        content = "\n".join([
-            "# Title",
-            "## 1. Identity & Purpose",
-            "## 2. Context & Domain",
-            "## 3. Decision Framework",
-            "## 4. Interaction Rules",
-            "## 5. Output Format",
-            "## 6. Anti-Patterns",
-            "## 7. Quick Reference",
-        ])
+        content = "\n".join(
+            [
+                "# Title",
+                "## 1. Identity & Purpose",
+                "## 2. Context & Domain",
+                "## 3. Decision Framework",
+                "## 4. Interaction Rules",
+                "## 5. Output Format",
+                "## 6. Anti-Patterns",
+                "## 7. Quick Reference",
+            ]
+        )
         errors = validate_prompt_structure(content)
         assert len(errors) == 0
 
@@ -73,16 +73,18 @@ class TestValidateCardStructure:
 
     def test_all_sections_present(self):
         """Если все секции есть — без ошибок."""
-        content = "\n".join([
-            "## Metadata",
-            "## Description",
-            "## Input / Output",
-            "## Scope & Boundaries",
-            "## Constraints & Anti-Patterns",
-            "## Usage Examples",
-            "## Validation Status",
-            "## Related Files",
-        ])
+        content = "\n".join(
+            [
+                "## Metadata",
+                "## Description",
+                "## Input / Output",
+                "## Scope & Boundaries",
+                "## Constraints & Anti-Patterns",
+                "## Usage Examples",
+                "## Validation Status",
+                "## Related Files",
+            ]
+        )
         errors = validate_card_structure(content)
         assert len(errors) == 0
 

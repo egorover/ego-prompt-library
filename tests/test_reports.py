@@ -29,7 +29,9 @@ def test_compute_summary_with_issues():
     ]
     issues = [
         Issue(severity="critical", prompt_name="role1", metric="quality", message="Low quality", recommendation="Fix"),
-        Issue(severity="warning", prompt_name="role1", metric="latency", message="High latency", recommendation="Optimize"),
+        Issue(
+            severity="warning", prompt_name="role1", metric="latency", message="High latency", recommendation="Optimize"
+        ),
         Issue(severity="info", prompt_name="role1", metric="status", message="Draft", recommendation="Validate"),
     ]
     summary = compute_summary(metrics, issues)
@@ -71,7 +73,9 @@ def test_generate_md_report():
 def test_generate_md_report_with_issues():
     metrics = [PromptMetrics(name="test-role")]
     issues = [
-        Issue(severity="critical", prompt_name="test-role", metric="quality", message="Low quality", recommendation="Fix"),
+        Issue(
+            severity="critical", prompt_name="test-role", metric="quality", message="Low quality", recommendation="Fix"
+        ),
     ]
     report = generate_md_report(metrics, issues)
     assert "## Issues" in report

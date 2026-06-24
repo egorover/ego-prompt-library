@@ -4,9 +4,8 @@
 Uses PromptMetrics dataclass to generate markdown dashboard files.
 """
 
-from datetime import date, timedelta
+from datetime import date
 from pathlib import Path
-from typing import Dict, Any
 
 from ._imports import get_logger
 from .models import PromptMetrics
@@ -15,11 +14,7 @@ logger = get_logger(__name__)
 
 
 def _get_month_names() -> list[str]:
-    """Return last 3 month names in Russian."""
-    month_names = [
-        "январь", "февраль", "март", "апрель", "май", "июнь",
-        "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"
-    ]
+    """Return last 3 month keys as 'YYYY-MM' strings."""
     now = date.today()
     months = []
     for i in range(2, -1, -1):
@@ -33,23 +28,30 @@ def _build_trend_rows(metrics: PromptMetrics, months: list[str]) -> list[str]:
     """Build trend rows for dashboard. Uses current metrics for current month,
     and placeholder data for previous months (historical data would require
     storing past snapshots)."""
-    now = date.today()
     rows = []
     for i, month_key in enumerate(reversed(months)):
         year, month = map(int, month_key.split("-"))
         month_name = [
-            "январь", "февраль", "март", "апрель", "май", "июнь",
-            "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"
+            "январь",
+            "февраль",
+            "март",
+            "апрель",
+            "май",
+            "июнь",
+            "июль",
+            "август",
+            "сентябрь",
+            "октябрь",
+            "ноябрь",
+            "декабрь",
         ][month - 1]
-        
+
         if i == 2:  # Current month
             rows.append(
                 f"| {month_name} ({year})  | {metrics.usage_count}     | {metrics.test_pass_rate}   | {int(metrics.latency_p50)}s      | {metrics.quality_avg if metrics.quality_count > 0 else '—'}       | {metrics.open_issues}      |"
             )
         else:
-            rows.append(
-                f"| {month_name} ({year})  | —     | —   | —      | —       | —      |"
-            )
+            rows.append(f"| {month_name} ({year})  | —     | —   | —      | —       | —      |")
     return rows
 
 
@@ -80,12 +82,12 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
 
 | Метрика            | Значение | Статус | Тренд  |
 |--------------------|----------|--------|--------|
-| Usage count        | {metrics.usage_count}        | ⚪     | {'→ рост' if metrics.usage_count > 0 else '⚪'}      |
-| Test pass rate     | {metrics.test_pass_rate}%     | {test_status}     | {'→ стаб' if metrics.test_pass_rate == 100 else '→ ' + ('рост' if metrics.test_pass_rate > 95 else 'падение')} |
+| Usage count        | {metrics.usage_count}        | ⚪     | {"→ рост" if metrics.usage_count > 0 else "⚪"}      |
+| Test pass rate     | {metrics.test_pass_rate}%     | {test_status}     | {"→ стаб" if metrics.test_pass_rate == 100 else "→ " + ("рост" if metrics.test_pass_rate > 95 else "падение")} |
 | Latency P50        | {int(metrics.latency_p50)}s       | {latency_status}     | —      |
-| Quality Avg        | {metrics.quality_avg if metrics.quality_count > 0 else '—'}        | {quality_status if metrics.quality_count > 0 else '⚪'}     | —      |
-| Changes (this mo)  | {metrics.changes_this_month}        | {'🟢' if metrics.changes_this_month <= 2 else '🟡'}     | —      |
-| Open issues        | {metrics.open_issues}        | {'🟢' if metrics.open_issues < 3 else '🟡'}     | —      |
+| Quality Avg        | {metrics.quality_avg if metrics.quality_count > 0 else "—"}        | {quality_status if metrics.quality_count > 0 else "⚪"}     | —      |
+| Changes (this mo)  | {metrics.changes_this_month}        | {"🟢" if metrics.changes_this_month <= 2 else "🟡"}     | —      |
+| Open issues        | {metrics.open_issues}        | {"🟢" if metrics.open_issues < 3 else "🟡"}     | —      |
 
 ## Trend (последние 3 месяца)
 

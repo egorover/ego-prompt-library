@@ -16,11 +16,8 @@ import sys
 from pathlib import Path
 
 from _imports import (
-    METRICS_THRESHOLDS,
-    config,
     discover_prompts,
     get_logger,
-    parse_status,
     read_file,
     REQUIRED_FILES,
     REQUIRED_PROMPT_SECTIONS,

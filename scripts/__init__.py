@@ -1,4 +1,4 @@
-﻿"""Ego Prompt Library — scripts package.
+"""Ego Prompt Library — scripts package.
 
 Public API:
 - validate: prompt structure validation

@@ -154,7 +154,12 @@ def collect_metrics(prompt_dir: Path) -> PromptMetrics:
         if latency_path.exists():
             latency_content = read_file(latency_path)
             metrics.latency_p50, metrics.latency_p95, metrics.latency_p99 = parse_latency(latency_content)
-            logger.debug("Latency: P50=%.1fs, P95=%.1fs, P99=%.1fs", metrics.latency_p50, metrics.latency_p95, metrics.latency_p99)
+            logger.debug(
+                "Latency: P50=%.1fs, P95=%.1fs, P99=%.1fs",
+                metrics.latency_p50,
+                metrics.latency_p95,
+                metrics.latency_p99,
+            )
 
         # Quality
         quality_path = prompt_dir / "metrics" / "quality.md"

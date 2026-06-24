@@ -1,9 +1,5 @@
 """Unit tests for metrics collector."""
 
-import pytest
-from pathlib import Path
-from tempfile import TemporaryDirectory
-
 from metrics.collector import (
     parse_metadata,
     count_usage,
@@ -79,6 +75,7 @@ class TestCountChangesThisMonth:
     def test_current_month_versions(self):
         """Версии за текущий месяц — считает."""
         from datetime import date
+
         now = date.today()
         current_month = now.strftime("%Y-%m")
         content = f"""## [v1.1.0] — {current_month}-15
@@ -90,8 +87,9 @@ class TestCountChangesThisMonth:
     def test_previous_month_versions(self):
         """Версии за прошлый месяц — не считает."""
         from datetime import date, timedelta
+
         now = date.today()
-        last_month = (now.replace(day=1) - timedelta(days=1))
+        last_month = now.replace(day=1) - timedelta(days=1)
         last_month_str = last_month.strftime("%Y-%m")
         content = f"## [v1.0.0] — {last_month_str}-15"
         count = count_changes_this_month(content)
