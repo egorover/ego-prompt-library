@@ -49,7 +49,7 @@ mkdir -p prompts/<role-name>/metrics
 | Field      | Value                    |
 |------------|--------------------------|
 | Name       | <role-name>              |
-| Version    | v1.0.0                   |
+| Version    | v1.1.0                   |
 | Author     | <your-name>              |
 | Status     | draft                    |
 | Created    | YYYY-MM-DD               |
@@ -116,11 +116,11 @@ mkdir -p prompts/<role-name>/metrics
 ```markdown
 # <Role-Name> — Changelog
 
-## [v1.0.0] — YYYY-MM-DD
+## [v1.1.0] — YYYY-MM-DD
 
 | Field    | Value              |
 |----------|--------------------|
-| Version  | v1.0.0             |
+| Version  | v1.1.0             |
 | Date     | YYYY-MM-DD         |
 | Author   | <your-name>        |
 | Type     | feat               |

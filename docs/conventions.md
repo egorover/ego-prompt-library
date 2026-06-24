@@ -74,7 +74,7 @@
 | Field      | Value                    |
 |------------|--------------------------|
 | Name       | python-architect         |
-| Version    | v1.0.0                   |
+| Version    | v1.1.0                   |
 | Author     | <author>                 |
 | Status     | validated                |
 | Created    | 2026-06-21               |
@@ -122,11 +122,11 @@
 ```markdown
 # <ROLE NAME> — Changelog
 
-## [v1.0.0] — 2026-06-21
+## [v1.1.0] — 2026-06-21
 
 | Field    | Value              |
 |----------|--------------------|
-| Version  | v1.0.0             |
+| Version  | v1.1.0             |
 | Date     | 2026-06-21         |
 | Author   | <author>           |
 | Type     | feat               |

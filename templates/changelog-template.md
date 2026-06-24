@@ -1,10 +1,10 @@
 # <ROLE NAME> — Changelog
 
-## [v1.0.0] — YYYY-MM-DD
+## [v1.1.0] — YYYY-MM-DD
 
 | Field    | Value              |
 |----------|--------------------|
-| Version  | v1.0.0             |
+| Version  | v1.1.0             |
 | Date     | YYYY-MM-DD         |
 | Author   | <author>           |
 | Type     | feat               |

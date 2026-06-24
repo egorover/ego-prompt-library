@@ -5,7 +5,7 @@
 | Field      | Value                    |
 |------------|--------------------------|
 | Name       | <role-name>              |
-| Version    | v1.0.0                   |
+| Version    | v1.1.0                   |
 | Author     | <author>                 |
 | Status     | draft                    |
 | Created    | YYYY-MM-DD               |
