@@ -60,15 +60,6 @@ REQUIRED_METADATA_FIELDS: list[str] = [
 
 VALID_STATUSES: set[str] = {"draft", "testing", "validated", "deprecated"}
 
-# ── Metrics thresholds (used by validate.py for warnings) ─────────────────
-
-METRICS_THRESHOLDS: dict[str, dict] = {
-    "test_pass_rate": {"warning": 95, "critical": 80},
-    "latency_p50": {"warning": 15, "critical": 30},
-    "quality_avg": {"warning": 4.0, "critical": 3.0},
-    "changes_per_month": {"warning": 2},
-}
-
 
 # ── Core functions ────────────────────────────────────────────────────────
 

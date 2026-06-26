@@ -7,22 +7,21 @@ Generates structured JSON output with metrics, issues, and summary.
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import List
 
 try:
-    from ..metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
+    from ..metrics.models import PromptMetrics, Issue
 except ImportError:
     try:
-        from metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
+        from metrics.models import PromptMetrics, Issue
     except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
+        from scripts.metrics.models import PromptMetrics, Issue
 
 from .utils import compute_summary
 
 
 def generate_json_report(
-    metrics_list: List[PromptMetrics],
-    issues: List[Issue],
+    metrics_list: list[PromptMetrics],
+    issues: list[Issue],
     strict: bool = False,
 ) -> str:
     """Generate JSON report string.
@@ -60,8 +59,8 @@ def generate_json_report(
 
 
 def write_json_report(
-    metrics_list: List[PromptMetrics],
-    issues: List[Issue],
+    metrics_list: list[PromptMetrics],
+    issues: list[Issue],
     output_path: str,
     strict: bool = False,
 ) -> None:

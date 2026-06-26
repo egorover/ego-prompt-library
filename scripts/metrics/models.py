@@ -37,7 +37,7 @@ class PromptMetrics(BaseModel):
     latency_p50: float = Field(default=0.0, ge=0.0)
     latency_p95: float = Field(default=0.0, ge=0.0)
     latency_p99: float = Field(default=0.0, ge=0.0)
-    quality_avg: float = Field(default=0.0, ge=0.0, le=5.0)
+    quality_avg: float = Field(default=0.0, ge=0.0, le=5.0)  # 0.0 = no ratings yet
     quality_count: int = Field(default=0, ge=0)
     changes_this_month: int = Field(default=0, ge=0)
     open_issues: int = Field(default=0, ge=0)

@@ -6,17 +6,17 @@ Provides:
 """
 
 try:
-    from ..metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
+    from ..metrics.models import PromptMetrics, Issue
 except ImportError:
     try:
-        from metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
+        from metrics.models import PromptMetrics, Issue
     except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
+        from scripts.metrics.models import PromptMetrics, Issue
 
 
 def compute_summary(
-    metrics_list: "list[PromptMetrics]",
-    issues: "list[Issue]",
+    metrics_list: list[PromptMetrics],
+    issues: list[Issue],
 ) -> dict:
     """Вычисляет сводную статистику для отчёта.
 

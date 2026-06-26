@@ -5,46 +5,48 @@ Each function checks one metric and returns a list of issues.
 
 Uses:
 - models.PromptMetrics, models.Issue
-- shared.METRICS_THRESHOLDS
+- thresholds passed from quality_gate.py (single source call)
 """
 
 from ._imports import get_logger
 from .models import PromptMetrics, Issue
-from .thresholds import get_metrics_thresholds
 
 logger = get_logger(__name__)
 
+Thresholds = dict[str, dict[str, float | int]]
 
-def check_test_pass_rate(metrics: PromptMetrics) -> list[Issue]:
+
+def check_test_pass_rate(metrics: PromptMetrics, thresholds: Thresholds) -> list[Issue]:
     """Проверяет процент пройденных тестов.
 
     Args:
         metrics: Объект с метриками промпта.
+        thresholds: Пороги quality gate (кэшированные).
 
     Returns:
         Список проблем (Issue).
     """
     issues: list[Issue] = []
-    thresholds = get_metrics_thresholds()
+    t = thresholds["test_pass_rate"]
 
-    if metrics.test_pass_rate < thresholds["test_pass_rate"]["critical"]:
+    if metrics.test_pass_rate < t["critical"]:
         issues.append(
             Issue(
                 severity="critical",
                 prompt_name=metrics.name,
                 metric="test_pass_rate",
-                message=f"Test pass rate {metrics.test_pass_rate}% is below {thresholds['test_pass_rate']['critical']}%",
+                message=f"Test pass rate {metrics.test_pass_rate}% is below {t['critical']}%",
                 recommendation="Run all test cases and fix failures immediately",
             )
         )
         logger.warning("Critical: test_pass_rate for %s is %.1f%%", metrics.name, metrics.test_pass_rate)
-    elif metrics.test_pass_rate < thresholds["test_pass_rate"]["warning"]:
+    elif metrics.test_pass_rate < t["warning"]:
         issues.append(
             Issue(
                 severity="warning",
                 prompt_name=metrics.name,
                 metric="test_pass_rate",
-                message=f"Test pass rate {metrics.test_pass_rate}% is below {thresholds['test_pass_rate']['warning']}%",
+                message=f"Test pass rate {metrics.test_pass_rate}% is below {t['warning']}%",
                 recommendation="Review and fix failing test cases",
             )
         )
@@ -52,36 +54,37 @@ def check_test_pass_rate(metrics: PromptMetrics) -> list[Issue]:
     return issues
 
 
-def check_latency(metrics: PromptMetrics) -> list[Issue]:
+def check_latency(metrics: PromptMetrics, thresholds: Thresholds) -> list[Issue]:
     """Проверяет задержку генерации (P50).
 
     Args:
         metrics: Объект с метриками промпта.
+        thresholds: Пороги quality gate (кэшированные).
 
     Returns:
         Список проблем (Issue).
     """
     issues: list[Issue] = []
-    thresholds = get_metrics_thresholds()
+    t = thresholds["latency_p50"]
 
-    if metrics.latency_p50 > thresholds["latency_p50"]["critical"]:
+    if metrics.latency_p50 > t["critical"]:
         issues.append(
             Issue(
                 severity="critical",
                 prompt_name=metrics.name,
                 metric="latency_p50",
-                message=f"P50 latency {metrics.latency_p50}s exceeds {thresholds['latency_p50']['critical']}s",
+                message=f"P50 latency {metrics.latency_p50}s exceeds {t['critical']}s",
                 recommendation="Optimize prompt: reduce verbosity, simplify logic",
             )
         )
         logger.warning("Critical: latency_p50 for %s is %.1fs", metrics.name, metrics.latency_p50)
-    elif metrics.latency_p50 > thresholds["latency_p50"]["warning"]:
+    elif metrics.latency_p50 > t["warning"]:
         issues.append(
             Issue(
                 severity="warning",
                 prompt_name=metrics.name,
                 metric="latency_p50",
-                message=f"P50 latency {metrics.latency_p50}s exceeds {thresholds['latency_p50']['warning']}s",
+                message=f"P50 latency {metrics.latency_p50}s exceeds {t['warning']}s",
                 recommendation="Consider simplifying prompt sections",
             )
         )
@@ -89,36 +92,37 @@ def check_latency(metrics: PromptMetrics) -> list[Issue]:
     return issues
 
 
-def check_quality(metrics: PromptMetrics) -> list[Issue]:
+def check_quality(metrics: PromptMetrics, thresholds: Thresholds) -> list[Issue]:
     """Проверяет средний рейтинг качества.
 
     Args:
         metrics: Объект с метриками промпта.
+        thresholds: Пороги quality gate (кэшированные).
 
     Returns:
         Список проблем (Issue).
     """
     issues: list[Issue] = []
-    thresholds = get_metrics_thresholds()
+    t = thresholds["quality_avg"]
 
-    if metrics.quality_count > 0 and metrics.quality_avg < thresholds["quality_avg"]["critical"]:
+    if metrics.quality_count > 0 and metrics.quality_avg < t["critical"]:
         issues.append(
             Issue(
                 severity="critical",
                 prompt_name=metrics.name,
                 metric="quality_avg",
-                message=f"Quality average {metrics.quality_avg} is below {thresholds['quality_avg']['critical']}",
+                message=f"Quality average {metrics.quality_avg} is below {t['critical']}",
                 recommendation="Major review needed — prompt may be producing poor outputs",
             )
         )
         logger.warning("Critical: quality_avg for %s is %.1f", metrics.name, metrics.quality_avg)
-    elif metrics.quality_count > 0 and metrics.quality_avg < thresholds["quality_avg"]["warning"]:
+    elif metrics.quality_count > 0 and metrics.quality_avg < t["warning"]:
         issues.append(
             Issue(
                 severity="warning",
                 prompt_name=metrics.name,
                 metric="quality_avg",
-                message=f"Quality average {metrics.quality_avg} is below {thresholds['quality_avg']['warning']}",
+                message=f"Quality average {metrics.quality_avg} is below {t['warning']}",
                 recommendation="Review user feedback and adjust prompt",
             )
         )
@@ -126,25 +130,26 @@ def check_quality(metrics: PromptMetrics) -> list[Issue]:
     return issues
 
 
-def check_changes_frequency(metrics: PromptMetrics) -> list[Issue]:
+def check_changes_frequency(metrics: PromptMetrics, thresholds: Thresholds) -> list[Issue]:
     """Проверяет частоту изменений.
 
     Args:
         metrics: Объект с метриками промпта.
+        thresholds: Пороги quality gate (кэшированные).
 
     Returns:
         Список проблем (Issue).
     """
     issues: list[Issue] = []
-    thresholds = get_metrics_thresholds()
+    t = thresholds["changes_per_month"]
 
-    if metrics.changes_this_month > thresholds["changes_per_month"]["warning"]:
+    if metrics.changes_this_month > t["warning"]:
         issues.append(
             Issue(
                 severity="info",
                 prompt_name=metrics.name,
                 metric="changes_this_month",
-                message=f"{metrics.changes_this_month} changes this month (recommended: ≤ {thresholds['changes_per_month']['warning']})",
+                message=f"{metrics.changes_this_month} changes this month (recommended: ≤ {t['warning']})",
                 recommendation="Consider batching changes to reduce instability",
             )
         )
@@ -153,7 +158,7 @@ def check_changes_frequency(metrics: PromptMetrics) -> list[Issue]:
 
 
 def check_status(metrics: PromptMetrics) -> list[Issue]:
-    """Проверяет статус промпта.
+    """Проверяет статус промпта (lifecycle check, not quality).
 
     Args:
         metrics: Объект с метриками промпта.

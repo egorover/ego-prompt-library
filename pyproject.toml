@@ -32,7 +32,7 @@ packages = ["scripts"]
 python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
-disallow_untyped_defs = false
+disallow_untyped_defs = true
 
 [tool.ruff]
 line-length = 120

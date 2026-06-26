@@ -28,12 +28,15 @@ def _resolve_library_root(target: Path) -> Path:
 
 def main() -> None:
     """Collect and display metrics for prompt library."""
+    from config import init
+
+    init()
+
     parser = argparse.ArgumentParser(description="Collect metrics for prompt library")
     parser.add_argument("target", nargs="?", default=".", help="Path to prompt directory or library root")
     parser.add_argument("--all", action="store_true", help="Collect metrics for all prompts in library")
     parser.add_argument("--json", action="store_true", help="Output JSON format")
     parser.add_argument("--dashboard", action="store_true", help="Update dashboard files")
-    parser.add_argument("--report", action="store_true", help="Generate full report")
     args = parser.parse_args()
 
     library_root = Path(__file__).parent.parent.parent

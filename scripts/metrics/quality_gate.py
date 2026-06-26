@@ -11,12 +11,13 @@ Uses:
 from ._imports import get_logger
 from .models import PromptMetrics, Issue
 from .gate_checks import (
-    check_test_pass_rate,
+    check_changes_frequency,
     check_latency,
     check_quality,
-    check_changes_frequency,
     check_status,
+    check_test_pass_rate,
 )
+from .thresholds import get_metrics_thresholds
 
 logger = get_logger(__name__)
 
@@ -30,13 +31,14 @@ def check_quality_gate(metrics: PromptMetrics) -> list[Issue]:
     Returns:
         Список найденных проблем (Issue).
     """
-    issues: list[Issue] = []
+    # Кэшируем пороги один раз вместо вызова в каждой функции
+    thresholds = get_metrics_thresholds()
 
-    # Run all individual checkers
-    issues.extend(check_test_pass_rate(metrics))
-    issues.extend(check_latency(metrics))
-    issues.extend(check_quality(metrics))
-    issues.extend(check_changes_frequency(metrics))
+    issues: list[Issue] = []
+    issues.extend(check_test_pass_rate(metrics, thresholds))
+    issues.extend(check_latency(metrics, thresholds))
+    issues.extend(check_quality(metrics, thresholds))
+    issues.extend(check_changes_frequency(metrics, thresholds))
     issues.extend(check_status(metrics))
 
     if issues:

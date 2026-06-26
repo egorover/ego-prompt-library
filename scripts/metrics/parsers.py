@@ -87,6 +87,53 @@ def parse_latency(latency_content: str) -> tuple[float, float, float]:
     )
 
 
+def _parse_markdown_table(content: str) -> list[list[str]]:
+    """Парсит markdown-таблицу в список строк (каждая строка — список ячеек).
+
+    Пропускает заголовок, разделитель и пустые строки.
+    Robust к extra whitespace и malformed строкам.
+
+    Args:
+        content: Текст markdown-таблицы.
+
+    Returns:
+        Список строк, каждая — список stripped-ячеек.
+    """
+    rows: list[list[str]] = []
+    header_seen = False
+
+    def _is_separator(cells: list[str]) -> bool:
+        """Проверяет, является ли строка разделителем (---|---|...)."""
+        for cell in cells:
+            s = cell.strip()
+            if not s:
+                continue
+            if not all(c == "-" for c in s):
+                return False
+        return True
+
+    for raw_line in content.splitlines():
+        stripped = raw_line.strip()
+        if not stripped or not stripped.startswith("|"):
+            continue
+
+        cells = [c.strip() for c in stripped.split("|")[1:-1]]
+
+        # Пропускаем разделитель (--- | --- | ...)
+        if _is_separator(cells):
+            continue
+
+        # Пропускаем заголовок (первая строка с данными)
+        if not header_seen:
+            header_seen = True
+            continue
+
+        if cells:
+            rows.append(cells)
+
+    return rows
+
+
 def parse_quality(quality_content: str) -> tuple[float, int]:
     """Извлекает средний рейтинг качества из унифицированного шаблона.
 
@@ -99,26 +146,31 @@ def parse_quality(quality_content: str) -> tuple[float, int]:
     ratings: list[float] = []
 
     try:
-        for line in quality_content.split("\n"):
-            if "|" not in line or not line.startswith("|"):
-                continue
+        rows = _parse_markdown_table(quality_content)
 
-            parts = [p.strip() for p in line.split("|")]
-            # Формат: | Date | User | Relevance | Completeness | Structure | Value | Scenario | Notes | Avg |
-            if len(parts) >= 10 and parts[1].count("-") == 2:
+        for row in rows:
+            # Формат 1: с Avg (9+ колонок) — последняя колонка = Avg
+            # | Date | User | Relevance | Completeness | Structure | Value | Scenario | Notes | Avg |
+            if len(row) >= 9:
                 try:
-                    avg = float(parts[9])
+                    avg_val = row[-1]  # последняя колонка = Avg
+                    avg = float(avg_val)
                     if 1 <= avg <= 5:
                         ratings.append(avg)
-                        continue
+                    # Если Avg валиден по формату, но вне диапазона [1,5] — игнорируем,
+                    # НЕ переходим к Формату 2 (колонки уже содержат Avg)
+                    continue
                 except (ValueError, IndexError):
                     pass
-            if len(parts) >= 8 and parts[1].count("-") == 2:
+
+            # Формат 2: без Avg — вычисляем из 4 колонок (8 колонок ровно)
+            # | Date | User | Relevance | Completeness | Structure | Value | Scenario | Notes |
+            if len(row) >= 8:
                 try:
-                    relevance = int(parts[3])
-                    completeness = int(parts[4])
-                    structure = int(parts[5])
-                    value = int(parts[6])
+                    relevance = int(row[2])
+                    completeness = int(row[3])
+                    structure = int(row[4])
+                    value = int(row[5])
                     avg = (relevance + completeness + structure + value) / 4
                     if 1 <= avg <= 5:
                         ratings.append(avg)

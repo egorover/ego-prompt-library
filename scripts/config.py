@@ -4,23 +4,27 @@
 
 Загружает переменные из .env и предоставляет доступ к настройкам
 через typed-класс Config (Pydantic BaseSettings).
+
+Инициализация side-эффектов (логирование, кодировка) выполняется
+явно через функцию init() для контроля порядка и изоляции тестов.
 """
 
 import os
 from functools import cached_property
 from pathlib import Path
+from typing import Optional
 
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
 
+# Флаг для однократной инициализации
+_initialized: bool = False
 
-# Загружаем .env из корня проекта
+
+# Загружаем .env из корня проекта (без side effects при импорте)
 _PROJECT_ROOT = Path(__file__).parent.parent
 _ENV_PATH = _PROJECT_ROOT / ".env"
-
-if _ENV_PATH.exists():
-    load_dotenv(_ENV_PATH)
 
 
 class MetricsThresholds(BaseModel):
@@ -98,8 +102,16 @@ class Config(BaseSettings):
         return self.environment == "development"
 
 
-# Глобальный экземпляр конфига
-config = Config()
+# Глобальный экземпляр конфига (создаётся лениво)
+_config: Optional[Config] = None
+
+
+def _get_config() -> Config:
+    """Ленивый геттер для глобального конфига."""
+    global _config
+    if _config is None:
+        _config = Config()
+    return _config
 
 
 def configure_console_encoding() -> None:
@@ -108,10 +120,10 @@ def configure_console_encoding() -> None:
 
     if sys.platform == "win32":
         try:
-            sys.stdout.reconfigure(encoding=config.python_io_encoding)  # type: ignore[union-attr]
-            sys.stderr.reconfigure(encoding=config.python_io_encoding)  # type: ignore[union-attr]
+            cfg = _get_config()
+            sys.stdout.reconfigure(encoding=cfg.python_io_encoding)  # type: ignore[union-attr]
+            sys.stderr.reconfigure(encoding=cfg.python_io_encoding)  # type: ignore[union-attr]
         except (AttributeError, OSError):
-            # Fallback для старых Python или терминалов без reconfigure
             os.environ["PYTHONUTF8"] = "1"
 
 
@@ -119,9 +131,23 @@ def configure_logging() -> None:
     """Настраивает глобальный уровень логирования из конфига."""
     from logger import set_log_level
 
-    set_log_level(config.log_level)
+    set_log_level(_get_config().log_level)
 
 
-# Инициализация при импорте
-configure_console_encoding()
-configure_logging()
+def init() -> None:
+    """Явная инициализация: загружает .env, настраивает консоль и логирование.
+
+    Вызывается один раз при старте CLI-утилит.
+    Повторные вызовы игнорируются.
+    """
+    global _initialized
+    if _initialized:
+        return
+
+    # Загружаем .env
+    if _ENV_PATH.exists():
+        load_dotenv(_ENV_PATH)
+
+    configure_console_encoding()
+    configure_logging()
+    _initialized = True

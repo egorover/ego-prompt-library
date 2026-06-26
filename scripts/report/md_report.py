@@ -7,20 +7,19 @@ per-prompt metrics, and issues section.
 
 from datetime import date
 from pathlib import Path
-from typing import List
 
 try:
-    from ..metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
+    from ..metrics.models import PromptMetrics, Issue
 except ImportError:
     try:
-        from metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
+        from metrics.models import PromptMetrics, Issue
     except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[no-redef]
+        from scripts.metrics.models import PromptMetrics, Issue
 
 from .utils import compute_summary
 
 
-def generate_md_report(metrics_list: List[PromptMetrics], issues: List[Issue]) -> str:
+def generate_md_report(metrics_list: list[PromptMetrics], issues: list[Issue]) -> str:
     """Generate Markdown report string.
 
     Args:
@@ -93,7 +92,7 @@ def generate_md_report(metrics_list: List[PromptMetrics], issues: List[Issue]) -
     return "\n".join(lines)
 
 
-def write_md_report(metrics_list: List[PromptMetrics], issues: List[Issue], output_path: str) -> None:
+def write_md_report(metrics_list: list[PromptMetrics], issues: list[Issue], output_path: str) -> None:
     """Generate Markdown report and write to file.
 
     Args:

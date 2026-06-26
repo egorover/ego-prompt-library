@@ -254,6 +254,10 @@ def validate_prompt(prompt_dir: Path, strict: bool = False) -> ValidationResult:
 
 def main() -> None:
     """CLI entry point."""
+    from config import init
+
+    init()
+
     parser = argparse.ArgumentParser(description="Validate prompt library structure")
     parser.add_argument("target", nargs="?", default=".", help="Path to prompt directory or library root")
     parser.add_argument("--strict", action="store_true", help="Treat warnings as errors")
