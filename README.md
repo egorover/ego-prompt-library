@@ -56,6 +56,9 @@
 ego-prompt-library/
 ├── README.md                  # Этот файл
 ├── .gitignore
+├── .env.example             # Пример переменных окружения
+├── .pre-commit-config.yaml   # pre-commit hooks
+├── LICENSE
 ├── TEMPLATE_NEW_ROLE.md       # Шаблон добавления новой роли
 ├── prompts/                   # Промпт-роли (production артефакты)
 │   └── python-architect/      # ← одна роль = одна директория
@@ -84,11 +87,28 @@ ego-prompt-library/
 │   ├── test-template.md
 │   └── changelog-template.md
 └── scripts/                   # Валидация, метрики, CI, отчёты
+    ├── __init__.py
+    ├── _imports.py            # Compatibility imports
     ├── validate.py            # CLI-валидатор структуры
     ├── ci-check.py            # CI-скрипт для GitHub Actions
+    ├── config.py              # Конфигурация (Pydantic BaseSettings)
+    ├── logger.py              # Логирование
+    ├── shared.py              # Общие константы и утилиты
     ├── metrics-collector.py   # Сбор метрик из всех ролей
     ├── report_cli.py          # Генерация отчётов (MD/HTML/JSON)
-    └── README.md
+    ├── metrics/               # Система метрик и quality gate
+    │   ├── collector.py       # Сборщик метрик
+    │   ├── parsers.py         # Парсеры dashboard/quality/latency
+    │   ├── models.py          # Pydantic-модели метрик
+    │   ├── quality_gate.py    # Quality gate orchestrator
+    │   ├── gate_checks.py     # Отдельные проверки (P0-P3)
+    │   ├── thresholds.py      # Пороги метрик
+    │   └── dashboard.py       # Обновление dashboard
+    └── report/                # Генерация отчётов
+        ├── json_report.py
+        ├── md_report.py
+        ├── html_report.py
+        └── utils.py
 ```
 
 ## 🚀 Возможности
@@ -201,6 +221,7 @@ python scripts/ci-check.py
 | [conventions.md](docs/conventions.md) | Соглашения: форматирование, структуры, шаблоны |
 | [governance.md](docs/governance.md) | Управление: roles, PR, review, metrics, deprecation |
 | [metrics.md](docs/metrics.md) | Система метрик и dashboards |
+| [AUDIT_REPORT_RU.md](AUDIT_REPORT_RU.md) | Аудит проекта (Python, CI/CD, security, architecture) |
 | [TEMPLATE_NEW_ROLE.md](TEMPLATE_NEW_ROLE.md) | Шаблон добавления новой роли |
 | [scripts/README.md](scripts/README.md) | Описание скриптов |
 
