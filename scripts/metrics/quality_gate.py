@@ -13,8 +13,8 @@ from .models import PromptMetrics, Issue
 from .gate_checks import (
     check_changes_frequency,
     check_latency,
+    check_lifecycle,
     check_quality,
-    check_status,
     check_test_pass_rate,
 )
 from .thresholds import get_metrics_thresholds
@@ -39,7 +39,7 @@ def check_quality_gate(metrics: PromptMetrics) -> list[Issue]:
     issues.extend(check_latency(metrics, thresholds))
     issues.extend(check_quality(metrics, thresholds))
     issues.extend(check_changes_frequency(metrics, thresholds))
-    issues.extend(check_status(metrics))
+    # lifecycle checks (draft/deprecated) moved to check_lifecycle_gate()
 
     if issues:
         logger.debug(
@@ -51,3 +51,19 @@ def check_quality_gate(metrics: PromptMetrics) -> list[Issue]:
         )
 
     return issues
+
+
+def check_lifecycle_gate(metrics: PromptMetrics) -> list[Issue]:
+    """Lifecycle check — separate from quality gate.
+
+    Проверяет статус промпта (draft/deprecated). Статусы жизненного цикла
+    не являются проблемами качества, поэтому результаты этого чекера
+    не должны влиять на качество gate.
+
+    Args:
+        metrics: Объект с метриками промпта.
+
+    Returns:
+        Список lifecycle-проблем (Issue).
+    """
+    return check_lifecycle(metrics)

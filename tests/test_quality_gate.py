@@ -1,7 +1,7 @@
 """Unit tests for quality gate checks."""
 
 from metrics.models import PromptMetrics
-from metrics.quality_gate import check_quality_gate
+from metrics.quality_gate import check_quality_gate, check_lifecycle_gate
 from metrics.gate_checks import check_test_pass_rate, check_quality, check_latency
 
 _DEFAULT_THRESHOLDS = {
@@ -48,7 +48,33 @@ def test_critical_latency():
     assert issues[0].severity == "critical"
 
 
-def test_draft_status_warning():
+def test_draft_status_not_in_quality_gate():
+    """Draft status is a lifecycle concern, not a quality gate issue."""
     metrics = PromptMetrics(name="test-role", status="draft")
     issues = check_quality_gate(metrics)
-    assert any(i.metric == "status" and i.severity == "warning" for i in issues)
+    assert not any(i.metric == "status" for i in issues)
+
+
+def test_lifecycle_draft_info():
+    """Draft status should be info severity, not warning."""
+    metrics = PromptMetrics(name="test-role", status="draft")
+    issues = check_lifecycle_gate(metrics)
+    assert len(issues) == 1
+    assert issues[0].severity == "info"
+    assert issues[0].metric == "status"
+
+
+def test_lifecycle_deprecated_info():
+    """Deprecated status should be info severity."""
+    metrics = PromptMetrics(name="test-role", status="deprecated")
+    issues = check_lifecycle_gate(metrics)
+    assert len(issues) == 1
+    assert issues[0].severity == "info"
+    assert issues[0].metric == "status"
+
+
+def test_lifecycle_validated_no_issues():
+    """Validated status should produce no lifecycle issues."""
+    metrics = PromptMetrics(name="test-role", status="validated")
+    issues = check_lifecycle_gate(metrics)
+    assert issues == []

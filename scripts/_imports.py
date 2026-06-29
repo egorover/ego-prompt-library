@@ -4,6 +4,9 @@ All scripts should import from this module to avoid circular imports
 and ensure consistent import patterns.
 """
 
+import sys
+from pathlib import Path
+
 try:
     from .logger import get_logger
     from .shared import (
@@ -18,8 +21,11 @@ try:
         read_file,
     )
 except ImportError:
-    from logger import get_logger
-    from shared import (
+    _root = Path(__file__).resolve().parent
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from logger import get_logger  # type: ignore[import]
+    from shared import (  # type: ignore[import]
         REQUIRED_CARD_SECTIONS,
         REQUIRED_FILES,
         REQUIRED_METADATA_FIELDS,

@@ -5,13 +5,16 @@ Provides:
 - compute_summary: calculates summary statistics from metrics and issues
 """
 
+import sys
+from pathlib import Path
+
 try:
     from ..metrics.models import PromptMetrics, Issue
 except ImportError:
-    try:
-        from metrics.models import PromptMetrics, Issue
-    except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue
+    _root = Path(__file__).resolve().parent.parent
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[import]
 
 
 def compute_summary(

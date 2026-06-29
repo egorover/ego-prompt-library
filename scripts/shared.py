@@ -12,9 +12,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 try:
-    from .logger import get_logger  # type: ignore[no-redef]
+    from .logger import get_logger  # type: ignore[import-not-found]
 except ImportError:
-    from logger import get_logger  # type: ignore[no-redef]
+    from logger import get_logger  # type: ignore[import-not-found, import]
 
 logger = get_logger(__name__)
 

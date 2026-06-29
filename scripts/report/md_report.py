@@ -5,16 +5,17 @@ Generates a structured Markdown report with summary,
 per-prompt metrics, and issues section.
 """
 
+import sys
 from datetime import date
 from pathlib import Path
 
 try:
     from ..metrics.models import PromptMetrics, Issue
 except ImportError:
-    try:
-        from metrics.models import PromptMetrics, Issue
-    except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue
+    _root = Path(__file__).resolve().parent.parent
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[import]
 
 from .utils import compute_summary
 
@@ -36,6 +37,8 @@ def generate_md_report(metrics_list: list[PromptMetrics], issues: list[Issue]) -
     warning_count = summary["warning_issues"]
     info_count = summary["info_issues"]
     healthy_count = summary["healthy"]
+
+    em_dash = "\u2014"
 
     lines = [
         "# Prompt Library Report",
@@ -71,7 +74,7 @@ def generate_md_report(metrics_list: list[PromptMetrics], issues: list[Issue]) -
                 f"| Test pass rate | {m.test_pass_rate}% |",
                 f"| Latency P50 | {m.latency_p50}s |",
                 f"| Latency P95 | {m.latency_p95}s |",
-                f"| Quality Avg | {m.quality_avg if m.quality_count > 0 else '\u2014'} |",
+                f"| Quality Avg | {m.quality_avg if m.quality_count > 0 else em_dash} |",
                 f"| Usage count | {m.usage_count} |",
                 f"| Changes this month | {m.changes_this_month} |",
                 "",

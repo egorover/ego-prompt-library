@@ -76,6 +76,8 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
     latency_status = "🟢" if metrics.latency_p50 < 15 else ("🟡" if metrics.latency_p50 < 30 else "🔴")
     quality_status = "🟢" if metrics.quality_avg >= 4.0 else ("🟡" if metrics.quality_avg >= 3.0 else "🔴")
 
+    trend_body = "\n".join(trend_rows)
+
     content = f"""# Dashboard: {metrics.name}
 
 ## Summary ({now_str})
@@ -93,7 +95,7 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
 
 | Месяц    | Usage | Test% | Latency | Quality | Issues |
 |----------|-------|-------|---------|---------|--------|
-{chr(10).join(trend_rows)}
+{trend_body}
 
 > 📌 Дашборд обновляется автоматически через CI.
 """

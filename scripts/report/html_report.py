@@ -5,16 +5,17 @@ Generates a styled HTML dashboard with metrics summary,
 per-prompt table, and issues section.
 """
 
+import sys
 from datetime import date
 from pathlib import Path
 
 try:
     from ..metrics.models import PromptMetrics, Issue
 except ImportError:
-    try:
-        from metrics.models import PromptMetrics, Issue
-    except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue
+    _root = Path(__file__).resolve().parent.parent
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[import]
 
 from .utils import compute_summary
 
@@ -64,10 +65,13 @@ def generate_html_report(metrics_list: list[PromptMetrics], issues: list[Issue])
                 <em>\u2192 {issue.recommendation}</em>
             </div>"""
             )
+        issues_body = "\n".join(issues_items)
         issues_html = f"""        <h2>\u26a0\ufe0f Issues</h2>
         <div class="issues">
-{chr(10).join(issues_items)}
+{issues_body}
         </div>"""
+
+    rows_body = "\n".join(rows)
 
     html = f"""<!DOCTYPE html>
 <html lang="ru">
@@ -140,7 +144,7 @@ def generate_html_report(metrics_list: list[PromptMetrics], issues: list[Issue])
                 </tr>
             </thead>
             <tbody>
-{chr(10)}{chr(10).join(rows)}
+{rows_body}
             </tbody>
         </table>
 

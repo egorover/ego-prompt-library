@@ -244,3 +244,24 @@ draft → testing → validated → (deprecated) → removed
 2. Owner triage в течение 48 часов
 3. Если подтверждено — hotfix или minor fix
 4. Добавить в test-cases как regression test
+
+## Automated Dashboard Updates
+
+### Auto-commit через `dashboard-update.yml`
+
+Workflow `.github/workflows/dashboard-update.yml` выполняет автоматическое обновление
+dashboard-файлов (`metrics/dashboard.md`) для всех промптов по расписанию (ежемесячный cron)
+и по ручному запуску.
+
+**Важно:** этот workflow использует auto-commit напрямую в ветку `main` **без PR review**.
+Это допустимая практика по следующим причинам:
+
+- Обновления носят исключительно технический характер (обновление метрик и статусов)
+- Не изменяют логику промптов, тестов или conventions
+- Все изменения можно откатить через `git revert`
+- Риск негативного воздействия минимален
+
+**Ограничения:**
+- Auto-commit не должен использоваться для изменений логики промптов, тестов или документации
+- Любые изменения, затрагивающие content промптов, должны проходить через PR с review
+- При обнаружении проблемных auto-коммитов — создать issue и откатить через `git revert`

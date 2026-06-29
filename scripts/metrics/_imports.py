@@ -1,18 +1,27 @@
 """Import compatibility for standalone and package execution.
 
-Note: try/except fallback imports are intentionally used for compatibility
-with both package and standalone execution — mypy redefinition errors suppressed.
+Uses sys.path manipulation for fallback imports to avoid
+3-level nested try/except chains.
 """
 
-try:
-    from ..logger import get_logger  # type: ignore[no-redef]
-except ImportError:
-    from logger import get_logger  # type: ignore[no-redef]
+import sys
+from pathlib import Path
 
 try:
-    from ..shared import discover_prompts, parse_status, read_file  # type: ignore[no-redef]
+    from ..logger import get_logger  # type: ignore[import-not-found]
 except ImportError:
-    from shared import discover_prompts, parse_status, read_file  # type: ignore[no-redef]
+    _root = Path(__file__).resolve().parent.parent
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from logger import get_logger  # type: ignore[import]
+
+try:
+    from ..shared import discover_prompts, parse_status, read_file  # type: ignore[import-not-found]
+except ImportError:
+    _root = Path(__file__).resolve().parent.parent
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from shared import discover_prompts, parse_status, read_file  # type: ignore[import]
 
 __all__ = [
     "discover_prompts",

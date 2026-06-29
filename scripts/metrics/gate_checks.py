@@ -157,8 +157,11 @@ def check_changes_frequency(metrics: PromptMetrics, thresholds: Thresholds) -> l
     return issues
 
 
-def check_status(metrics: PromptMetrics) -> list[Issue]:
+def check_lifecycle(metrics: PromptMetrics) -> list[Issue]:
     """Проверяет статус промпта (lifecycle check, not quality).
+
+    Статусы "draft" и "deprecated" — не проблемы качества, поэтому
+    помечаются как "info", а не "warning".
 
     Args:
         metrics: Объект с метриками промпта.
@@ -181,7 +184,7 @@ def check_status(metrics: PromptMetrics) -> list[Issue]:
     elif metrics.status == "draft":
         issues.append(
             Issue(
-                severity="warning",
+                severity="info",
                 prompt_name=metrics.name,
                 metric="status",
                 message="Prompt is in draft status",

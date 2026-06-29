@@ -5,16 +5,17 @@ Generates structured JSON output with metrics, issues, and summary.
 """
 
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 
 try:
     from ..metrics.models import PromptMetrics, Issue
 except ImportError:
-    try:
-        from metrics.models import PromptMetrics, Issue
-    except ImportError:
-        from scripts.metrics.models import PromptMetrics, Issue
+    _root = Path(__file__).resolve().parent.parent
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[import]
 
 from .utils import compute_summary
 

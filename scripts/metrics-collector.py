@@ -3,6 +3,9 @@
 
 Usage:
     python scripts/metrics-collector.py --all
+
+Note: This script exists for backward compatibility. New code should
+use `python -m scripts.metrics` or the `metrics-collector` console script.
 """
 
 import sys
