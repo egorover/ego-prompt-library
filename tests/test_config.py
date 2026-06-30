@@ -1,8 +1,6 @@
 """Unit tests for config.py — init() and Config class."""
 
-import os
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -93,7 +91,7 @@ class TestConfig:
     def test_prompts_dir_not_exists_by_default(self):
         cfg = Config()
         # prompts dir may not exist in test env
-        assert (cfg.prompts_dir == cfg.project_root / "prompts")
+        assert cfg.prompts_dir == cfg.project_root / "prompts"
 
     def test_scripts_dir(self):
         cfg = Config()
@@ -124,13 +122,16 @@ class TestInit:
     def setup_method(self):
         """Reset _initialized before each test."""
         import config
+
         config._initialized = False
 
     def test_init_called_once(self):
         """init() should be idempotent — only first call has effect."""
-        with patch("config.load_dotenv") as mock_load, \
-             patch("config.configure_console_encoding") as mock_console, \
-             patch("config.configure_logging") as mock_logging:
+        with (
+            patch("config.load_dotenv") as mock_load,
+            patch("config.configure_console_encoding") as mock_console,
+            patch("config.configure_logging") as mock_logging,
+        ):
             init()
             mock_load.assert_called_once()
             mock_console.assert_called_once()
@@ -138,11 +139,14 @@ class TestInit:
 
     def test_init_idempotent(self):
         """Second call to init() should not re-execute side effects."""
-        with patch("config.load_dotenv") as mock_load, \
-             patch("config.configure_console_encoding") as mock_console, \
-             patch("config.configure_logging") as mock_logging:
+        with (
+            patch("config.load_dotenv") as mock_load,
+            patch("config.configure_console_encoding") as mock_console,
+            patch("config.configure_logging") as mock_logging,
+        ):
             # Reset _initialized flag to simulate real scenario
             import config
+
             config._initialized = False
 
             init()
@@ -172,9 +176,11 @@ class TestInit:
             del sys.modules[m]
 
         # Now import fresh
-        with patch("config.load_dotenv") as mock_load, \
-             patch("config.configure_console_encoding") as mock_console, \
-             patch("config.configure_logging") as mock_logging:
+        with (
+            patch("config.load_dotenv") as mock_load,
+            patch("config.configure_console_encoding") as mock_console,
+            patch("config.configure_logging") as mock_logging,
+        ):
             # Import the fresh module
             from config import init as fresh_init
 

@@ -1,7 +1,7 @@
 """Unit tests for metrics dashboard updater."""
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -29,6 +29,7 @@ def sample_metrics():
 
 # ── _get_month_names ────────────────────────────────────────────────
 
+
 def test_get_month_names_returns_three():
     months = _get_month_names()
     assert len(months) == 3
@@ -41,6 +42,7 @@ def test_get_month_names_returns_three():
 
 
 # ── _build_trend_rows ───────────────────────────────────────────────
+
 
 def test_build_trend_rows_current_month_populated(sample_metrics):
     months = ["2025-01", "2025-02", "2025-03"]
@@ -61,6 +63,7 @@ def test_build_trend_rows_previous_months_dashes(sample_metrics):
 
 
 # ── update_dashboard ────────────────────────────────────────────────
+
 
 class TestUpdateDashboard:
     """Тесты функции update_dashboard."""
@@ -164,3 +167,21 @@ class TestUpdateDashboard:
         # Перечитываем как UTF-8 — не должно raise
         content = (prompt_dir / "metrics" / "dashboard.md").read_text(encoding="utf-8")
         assert len(content) > 0
+
+    def test_dashboard_oserror_handled(self, tmp_path: Path, sample_metrics, monkeypatch):
+        """OSError при записи — логируется, не падает."""
+        prompt_dir = tmp_path / "my-prompt"
+        prompt_dir.mkdir()
+        metrics_dir = prompt_dir / "metrics"
+        metrics_dir.mkdir()
+        dashboard_path = metrics_dir / "dashboard.md"
+        dashboard_path.write_text("", encoding="utf-8")
+
+        # Мокаем write_text чтобы бросить OSError
+        def mock_write_text(self, *args, **kwargs):
+            raise OSError("Permission denied")
+
+        monkeypatch.setattr(Path, "write_text", mock_write_text)
+
+        # Не должно упасть с исключением
+        update_dashboard(sample_metrics, prompt_dir)

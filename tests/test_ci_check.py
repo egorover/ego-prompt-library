@@ -5,8 +5,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
 
 class TestMain:
     """Tests for ci-check.py main() function via subprocess."""
@@ -21,6 +19,7 @@ class TestMain:
 
         # Copy scripts
         import shutil
+
         src = Path(__file__).parent.parent / "scripts"
         dst = project_root / "scripts"
         if dst.exists():
@@ -48,13 +47,20 @@ class TestMain:
         prompt1.mkdir()
 
         # Create required files with proper format
-        (prompt1 / "prompt.md").write_text("# 1. Identity & Purpose\n# 2. Context & Domain\n# 3. Decision Framework\n# 4. Interaction Rules\n# 5. Output Format\n# 6. Anti-Patterns\n# 7. Quick Reference\n")
-        (prompt1 / "card.md").write_text("## Metadata\n| Name | Test | Version | 1.0 | Status | validated | Author | Dev | Created | 2024-01-01 | Updated | 2024-01-01 | Category | Test |\n## Description\nTest\n## Input / Output\nTest\n## Scope & Boundaries\nTest\n## Constraints & Anti-Patterns\nTest\n## Usage Examples\nTest\n## Validation Status\nTest\n## Related Files\nTest\n")
-        (prompt1 / "test-cases.md").write_text("# Test Cases\n## TC-001: Pass\n- [x] Pass\nStatus: Pass\n## TC-002: Pass\n- [x] Pass\nStatus: Pass\n## TC-003: Pass\n- [x] Pass\nStatus: Pass\n## TC-004: Pass\n- [x] Pass\nStatus: Pass\n## TC-005: Pass\n- [x] Pass\nStatus: Pass\n")
+        (prompt1 / "prompt.md").write_text(
+            "# 1. Identity & Purpose\n# 2. Context & Domain\n# 3. Decision Framework\n# 4. Interaction Rules\n# 5. Output Format\n# 6. Anti-Patterns\n# 7. Quick Reference\n"
+        )
+        (prompt1 / "card.md").write_text(
+            "## Metadata\n| Name | Test | Version | 1.0 | Status | validated | Author | Dev | Created | 2024-01-01 | Updated | 2024-01-01 | Category | Test |\n## Description\nTest\n## Input / Output\nTest\n## Scope & Boundaries\nTest\n## Constraints & Anti-Patterns\nTest\n## Usage Examples\nTest\n## Validation Status\nTest\n## Related Files\nTest\n"
+        )
+        (prompt1 / "test-cases.md").write_text(
+            "# Test Cases\n## TC-001: Pass\n- [x] Pass\nStatus: Pass\n## TC-002: Pass\n- [x] Pass\nStatus: Pass\n## TC-003: Pass\n- [x] Pass\nStatus: Pass\n## TC-004: Pass\n- [x] Pass\nStatus: Pass\n## TC-005: Pass\n- [x] Pass\nStatus: Pass\n"
+        )
         (prompt1 / "changelog.md").write_text("## [v1.0.0] - 2024-01-01\n- Initial release\n")
 
         # Copy scripts
         import shutil
+
         src = Path(__file__).parent.parent / "scripts"
         dst = project_root / "scripts"
         if dst.exists():
@@ -70,4 +76,3 @@ class TestMain:
             env={**os.environ, "PYTHONPATH": str(project_root)},
         )
         assert result.returncode == 0
-

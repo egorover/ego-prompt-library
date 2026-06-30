@@ -14,7 +14,7 @@ from pathlib import Path
 try:
     from .logger import get_logger  # type: ignore[import-not-found]
 except ImportError:
-    from logger import get_logger  # type: ignore[import-not-found, import]
+    from logger import get_logger  # type: ignore[import-not-found, import, no-redef]
 
 logger = get_logger(__name__)
 

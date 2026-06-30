@@ -24,8 +24,8 @@ except ImportError:
     _root = Path(__file__).resolve().parent
     if str(_root) not in sys.path:
         sys.path.insert(0, str(_root))
-    from logger import get_logger  # type: ignore[import]
-    from shared import (  # type: ignore[import]
+    from logger import get_logger  # type: ignore[import, no-redef]
+    from shared import (  # type: ignore[import, no-redef]
         REQUIRED_CARD_SECTIONS,
         REQUIRED_FILES,
         REQUIRED_METADATA_FIELDS,

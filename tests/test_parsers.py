@@ -28,6 +28,7 @@ SAMPLE_LATENCY = """
 
 # ── percentile ──────────────────────────────────────────────────────
 
+
 def test_percentile_empty():
     assert percentile([], 50) == 0.0
 
@@ -37,6 +38,7 @@ def test_percentile_single():
 
 
 # ── parse_quality (positive) ────────────────────────────────────────
+
 
 def test_parse_quality_from_table():
     avg, count = parse_quality(SAMPLE_QUALITY)
@@ -69,6 +71,7 @@ def test_parse_quality_no_content():
 
 
 # ── parse_quality (negative / robustness) ───────────────────────────
+
 
 def test_parse_quality_malformed_no_headers():
     """Полный мусор без заголовков — не должно упасть."""
@@ -107,17 +110,14 @@ def test_parse_quality_mixed_valid_invalid():
 
 def test_parse_quality_partial_columns():
     """Строки с недостаточным числом колонок — игнорируются."""
-    data = (
-        "| Date | User | Relevance |\n"
-        "|------|------|-----------|\n"
-        "| 2026-06-21 | admin | 5 |\n"
-    )
+    data = "| Date | User | Relevance |\n|------|------|-----------|\n| 2026-06-21 | admin | 5 |\n"
     avg, count = parse_quality(data)
     assert count == 0
     assert avg == 0.0
 
 
 # ── parse_test_results ──────────────────────────────────────────────
+
 
 def test_parse_test_results():
     passed, total = parse_test_results(SAMPLE_TESTS)
@@ -139,6 +139,7 @@ def test_parse_test_results_all_failed():
 
 
 # ── parse_latency ───────────────────────────────────────────────────
+
 
 def test_parse_latency():
     p50, p95, p99 = parse_latency(SAMPLE_LATENCY)

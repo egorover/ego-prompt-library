@@ -13,7 +13,7 @@ except ImportError:
     _root = Path(__file__).resolve().parent.parent
     if str(_root) not in sys.path:
         sys.path.insert(0, str(_root))
-    from logger import get_logger  # type: ignore[import]
+    from logger import get_logger  # type: ignore[import, no-redef]
 
 try:
     from ..shared import discover_prompts, parse_status, read_file  # type: ignore[import-not-found]
@@ -21,7 +21,7 @@ except ImportError:
     _root = Path(__file__).resolve().parent.parent
     if str(_root) not in sys.path:
         sys.path.insert(0, str(_root))
-    from shared import discover_prompts, parse_status, read_file  # type: ignore[import]
+    from shared import discover_prompts, parse_status, read_file  # type: ignore[import, no-redef]
 
 __all__ = [
     "discover_prompts",
