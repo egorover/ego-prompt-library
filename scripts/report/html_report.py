@@ -17,6 +17,7 @@ except ImportError:
         sys.path.insert(0, str(_root))
     from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[import]
 
+from .sanitize import sanitize
 from .utils import compute_summary
 
 
@@ -44,9 +45,9 @@ def generate_html_report(metrics_list: list[PromptMetrics], issues: list[Issue])
         quality_display = m.quality_avg if m.quality_count > 0 else "\u2014"
         rows.append(
             f"""                <tr>
-                    <td><strong>{m.name}</strong></td>
+                    <td><strong>{sanitize(m.name)}</strong></td>
                     <td>{m.version}</td>
-                    <td><span class="badge badge-{status_class}">{m.status}</span></td>
+                    <td><span class="badge badge-{status_class}">{sanitize(m.status)}</span></td>
                     <td><span class="badge badge-{test_class}">{m.test_pass_rate}%</span></td>
                     <td>{m.latency_p50}s</td>
                     <td>{quality_display}</td>
@@ -60,9 +61,9 @@ def generate_html_report(metrics_list: list[PromptMetrics], issues: list[Issue])
         for issue in sorted(issues, key=lambda x: {"critical": 0, "warning": 1, "info": 2}[x.severity]):
             issues_items.append(
                 f"""            <div class="issue issue-{issue.severity}">
-                <strong>[{issue.severity.upper()}]</strong> {issue.prompt_name} \u2014 {issue.metric}<br>
-                {issue.message}<br>
-                <em>\u2192 {issue.recommendation}</em>
+                <strong>[{issue.severity.upper()}]</strong> {sanitize(issue.prompt_name)} \u2014 {sanitize(issue.metric)}<br>
+                {sanitize(issue.message)}<br>
+                <em>\u2192 {sanitize(issue.recommendation)}</em>
             </div>"""
             )
         issues_body = "\n".join(issues_items)
@@ -165,4 +166,4 @@ def write_html_report(metrics_list: list[PromptMetrics], issues: list[Issue], ou
         output_path: File path to write report.
     """
     report = generate_html_report(metrics_list, issues)
-    Path(output_path).write_text(report, encoding="utf-8")
+    Path(output_path).write_text(sanitize(report), encoding="utf-8")

@@ -17,6 +17,7 @@ except ImportError:
         sys.path.insert(0, str(_root))
     from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[import]
 
+from .sanitize import sanitize
 from .utils import compute_summary
 
 
@@ -46,10 +47,10 @@ def generate_json_report(
         "issues": [
             {
                 "severity": i.severity,
-                "prompt": i.prompt_name,
-                "metric": i.metric,
-                "message": i.message,
-                "recommendation": i.recommendation,
+                "prompt": sanitize(i.prompt_name),
+                "metric": sanitize(i.metric),
+                "message": sanitize(i.message),
+                "recommendation": sanitize(i.recommendation),
             }
             for i in issues
         ],
@@ -74,4 +75,4 @@ def write_json_report(
         strict: If True, filter to critical/warning only.
     """
     report = generate_json_report(metrics_list, issues, strict)
-    Path(output_path).write_text(report, encoding="utf-8")
+    Path(output_path).write_text(sanitize(report), encoding="utf-8")

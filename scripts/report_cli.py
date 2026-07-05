@@ -21,6 +21,7 @@ from _imports import (
 )
 from metrics import collect_metrics, check_quality_gate
 from report import generate_json_report, generate_html_report, generate_md_report
+from report.sanitize import sanitize
 
 logger = get_logger(__name__)
 console = Console()
@@ -63,7 +64,7 @@ def main() -> None:
         if args.json:
             report = generate_json_report(metrics_list, all_issues, strict=args.strict)
             if args.output:
-                Path(args.output).write_text(report, encoding="utf-8")
+                Path(args.output).write_text(sanitize(report), encoding="utf-8")
                 console.print(f"[OK] JSON report written to {args.output}", style="green")
             else:
                 console.print(report)
@@ -73,7 +74,7 @@ def main() -> None:
         if args.html:
             report = generate_html_report(metrics_list, filtered_issues)
             if args.output:
-                Path(args.output).write_text(report, encoding="utf-8")
+                Path(args.output).write_text(sanitize(report), encoding="utf-8")
                 console.print(f"[OK] HTML report written to {args.output}", style="green")
             else:
                 console.print(report)
@@ -82,7 +83,7 @@ def main() -> None:
         # Markdown-вывод (по умолчанию)
         report = generate_md_report(metrics_list, filtered_issues)
         if args.output:
-            Path(args.output).write_text(report, encoding="utf-8")
+            Path(args.output).write_text(sanitize(report), encoding="utf-8")
             console.print(f"[OK] Report written to {args.output}", style="green")
         else:
             console.print(report)

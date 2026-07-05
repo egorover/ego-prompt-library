@@ -17,6 +17,7 @@ except ImportError:
         sys.path.insert(0, str(_root))
     from scripts.metrics.models import PromptMetrics, Issue  # type: ignore[import]
 
+from .sanitize import sanitize
 from .utils import compute_summary
 
 
@@ -67,7 +68,7 @@ def generate_md_report(metrics_list: list[PromptMetrics], issues: list[Issue]) -
     for m in metrics_list:
         lines.extend(
             [
-                f"### {m.name} ({m.version}, {m.status})",
+                f"### {sanitize(m.name)} ({m.version}, {sanitize(m.status)})",
                 "",
                 "| \u041c\u0435\u0442\u0440\u0438\u043a\u0430 | \u0417\u043d\u0430\u0447\u0435\u043d\u0438\u0435 |",
                 "|---------|----------|",
@@ -86,8 +87,8 @@ def generate_md_report(metrics_list: list[PromptMetrics], issues: list[Issue]) -
         for issue in sorted(issues, key=lambda x: {"critical": 0, "warning": 1, "info": 2}[x.severity]):
             lines.extend(
                 [
-                    f"- **[{issue.severity.upper()}]** {issue.prompt_name} \u2014 {issue.metric}: {issue.message}",
-                    f"  \u2192 {issue.recommendation}",
+                    f"- **[{issue.severity.upper()}]** {sanitize(issue.prompt_name)} \u2014 {sanitize(issue.metric)}: {sanitize(issue.message)}",
+                    f"  \u2192 {sanitize(issue.recommendation)}",
                 ]
             )
         lines.append("")
@@ -104,4 +105,4 @@ def write_md_report(metrics_list: list[PromptMetrics], issues: list[Issue], outp
         output_path: File path to write report.
     """
     report = generate_md_report(metrics_list, issues)
-    Path(output_path).write_text(report, encoding="utf-8")
+    Path(output_path).write_text(sanitize(report), encoding="utf-8")
