@@ -1,7 +1,8 @@
 """Unit tests for metrics thresholds loading."""
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
+import pytest
 
 from metrics.thresholds import get_metrics_thresholds
 
@@ -47,18 +48,29 @@ class TestMetricsThresholds:
         mock_cfg = MagicMock()
         mock_cfg.metrics_thresholds = mock_thresholds
 
-        import metrics.thresholds as thresholds_mod
-        original = thresholds_mod._get_config
-        thresholds_mod._get_config = lambda: mock_cfg
-        try:
+        with patch("metrics.thresholds._get_config", return_value=mock_cfg):
             thresholds = get_metrics_thresholds()
-        finally:
-            thresholds_mod._get_config = original
 
         assert thresholds["test_pass_rate"]["warning"] == 90.0
         assert thresholds["test_pass_rate"]["critical"] == 75.0
         assert thresholds["latency_p50"]["warning"] == 20.0
         assert thresholds["quality_avg"]["warning"] == 3.5
+
+    def test_thresholds_fallback_on_config_error(self):
+        """При ошибке конфига — используются дефолтные значения."""
+        with patch("metrics.thresholds._get_config", side_effect=RuntimeError("Config unavailable")):
+            # get_metrics_thresholds должен перехватить RuntimeError и вернуть дефолты
+            thresholds = get_metrics_thresholds()
+
+        assert thresholds["test_pass_rate"]["warning"] == 95
+        assert thresholds["latency_p50"]["critical"] == 30
+
+    def test_thresholds_fallback_on_none_config(self):
+        """При None конфиге — используются дефолтные значения."""
+        with patch("metrics.thresholds._get_config", return_value=None):
+            thresholds = get_metrics_thresholds()
+
+        assert thresholds["test_pass_rate"]["warning"] == 95
 
     def test_thresholds_changes_per_month_no_critical(self):
         """changes_per_month не имеет critical порога."""
