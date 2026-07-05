@@ -1,9 +1,7 @@
 """Unit tests for _imports.py fallback import mechanism."""
 
-import sys
 from pathlib import Path
 
-import pytest
 
 
 class TestSharedImports:

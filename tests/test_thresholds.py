@@ -2,7 +2,6 @@
 
 from unittest.mock import MagicMock
 
-import pytest
 
 from metrics.thresholds import get_metrics_thresholds
 
