@@ -23,7 +23,13 @@ class TestReportInit:
         """report.__all__ содержит все публичные функции."""
         from scripts import report
 
-        expected = ["generate_json_report", "generate_html_report", "generate_md_report", "compute_summary"]
+        expected = [
+            "generate_json_report",
+            "generate_html_report",
+            "generate_md_report",
+            "sanitize",
+            "compute_summary",
+        ]
         assert report.__all__ == expected
 
 

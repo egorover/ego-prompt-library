@@ -4,11 +4,20 @@
 Uses PromptMetrics dataclass to generate markdown dashboard files.
 """
 
+import sys
 from datetime import date
 from pathlib import Path
 
 from ._imports import get_logger
 from .models import PromptMetrics
+
+try:
+    from ..report.sanitize import sanitize
+except ImportError:
+    _root = Path(__file__).resolve().parent.parent
+    if str(_root) not in sys.path:
+        sys.path.insert(0, str(_root))
+    from scripts.report.sanitize import sanitize  # type: ignore[import]
 
 logger = get_logger(__name__)
 
@@ -101,7 +110,7 @@ def update_dashboard(metrics: PromptMetrics, prompt_dir: Path) -> None:
 """
 
     try:
-        dashboard_path.write_text(content, encoding="utf-8")
+        dashboard_path.write_text(sanitize(content), encoding="utf-8")
         logger.debug("Dashboard updated for %s", prompt_dir.name)
     except OSError as e:
         logger.error("Failed to write dashboard for %s: %s", prompt_dir.name, e)

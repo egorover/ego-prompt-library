@@ -185,3 +185,29 @@ class TestUpdateDashboard:
 
         # Не должно упасть с исключением
         update_dashboard(sample_metrics, prompt_dir)
+
+    def test_dashboard_sanitizes_surrogates(self, tmp_path: Path):
+        """Dashboard корректно обрабатывает surrogate-символы в имени промпта."""
+        from metrics.dashboard import update_dashboard
+        from unittest.mock import MagicMock
+
+        m = MagicMock()
+        m.name = "test\ud800-prompt"  # surrogate в имени
+        m.usage_count = 10
+        m.test_pass_rate = 95.0
+        m.latency_p50 = 10.0
+        m.quality_avg = 4.0
+        m.quality_count = 1
+        m.changes_this_month = 0
+        m.open_issues = 0
+
+        prompt_dir = tmp_path / "test-prompt"
+        prompt_dir.mkdir()
+        (prompt_dir / "metrics").mkdir()
+        (prompt_dir / "metrics" / "dashboard.md").write_text("", encoding="utf-8")
+
+        update_dashboard(m, prompt_dir)
+
+        # Перечитываем как UTF-8 — не должно raise
+        content = (prompt_dir / "metrics" / "dashboard.md").read_text(encoding="utf-8")
+        assert "test" in content
