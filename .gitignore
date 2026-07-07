@@ -37,3 +37,10 @@ dashboard.html
 report.json
 metrics-data.json
 validation-results.json
+
+# Coverage
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.pytest_cache/
