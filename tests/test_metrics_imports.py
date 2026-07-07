@@ -3,13 +3,13 @@
 from pathlib import Path
 
 
-
 class TestMetricsImports:
     """Тесты для scripts/metrics/_imports.py."""
 
     def test_import_all_exports(self):
         """Все экспортируемые имена доступны."""
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "metrics_imports",
             SCRIPTS_DIR / "metrics" / "_imports.py",
@@ -24,6 +24,7 @@ class TestMetricsImports:
     def test_get_logger_returns_logger(self):
         """get_logger возвращает logger объект."""
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "metrics_imports",
             SCRIPTS_DIR / "metrics" / "_imports.py",
@@ -38,6 +39,7 @@ class TestMetricsImports:
     def test_discover_prompts_returns_list(self):
         """discover_prompts возвращает список."""
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "metrics_imports",
             SCRIPTS_DIR / "metrics" / "_imports.py",
@@ -51,6 +53,7 @@ class TestMetricsImports:
     def test_parse_status_returns_string(self):
         """parse_status возвращает строку."""
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "metrics_imports",
             SCRIPTS_DIR / "metrics" / "_imports.py",

@@ -24,6 +24,7 @@ class TestReportCli:
         (project_root / "prompts").mkdir()
 
         import shutil
+
         src = SCRIPTS_DIR
         dst = project_root / "scripts"
         if dst.exists():
@@ -70,6 +71,7 @@ class TestReportCli:
         (prompt_dir / "changelog.md").write_text("## [v1.0.0] — 2026-06-01\n", encoding="utf-8")
 
         import shutil
+
         src = SCRIPTS_DIR
         dst = project_root / "scripts"
         if dst.exists():
@@ -101,6 +103,7 @@ class TestMetricsCollector:
         (project_root / "prompts").mkdir()
 
         import shutil
+
         src = SCRIPTS_DIR
         dst = project_root / "scripts"
         if dst.exists():
@@ -124,6 +127,7 @@ class TestMetricsCollector:
         (project_root / "prompts").mkdir()
 
         import shutil
+
         src = SCRIPTS_DIR
         dst = project_root / "scripts"
         if dst.exists():

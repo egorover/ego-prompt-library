@@ -3,7 +3,6 @@
 from pathlib import Path
 
 
-
 class TestSharedImports:
     """Тесты для scripts/_imports.py."""
 
@@ -11,6 +10,7 @@ class TestSharedImports:
         """Все экспортируемые имена доступны."""
         # Импортируем как standalone модуль (как это делают скрипты)
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_imports",
             SCRIPTS_DIR / "_imports.py",
@@ -36,6 +36,7 @@ class TestSharedImports:
     def test_required_files_constants(self):
         """REQUIRED_FILES содержит 4 обязательных файла."""
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_imports",
             SCRIPTS_DIR / "_imports.py",
@@ -50,6 +51,7 @@ class TestSharedImports:
     def test_valid_statuses(self):
         """VALID_STATUSES содержит 4 статуса."""
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_imports",
             SCRIPTS_DIR / "_imports.py",
@@ -62,6 +64,7 @@ class TestSharedImports:
     def test_validation_result_dataclass(self):
         """ValidationResult — dataclass с is_valid и to_dict."""
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_imports",
             SCRIPTS_DIR / "_imports.py",
@@ -76,6 +79,7 @@ class TestSharedImports:
     def test_parse_status_validated(self):
         """parse_status извлекает статус validated."""
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_imports",
             SCRIPTS_DIR / "_imports.py",
@@ -89,6 +93,7 @@ class TestSharedImports:
     def test_parse_status_unknown(self):
         """parse_status возвращает unknown для невалидного статуса."""
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_imports",
             SCRIPTS_DIR / "_imports.py",
@@ -102,6 +107,7 @@ class TestSharedImports:
     def test_discover_prompts_empty(self):
         """discover_prompts возвращает пустой список если нет prompts/."""
         import importlib.util
+
         spec = importlib.util.spec_from_file_location(
             "_imports",
             SCRIPTS_DIR / "_imports.py",
