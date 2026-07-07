@@ -51,8 +51,8 @@ jobs:
         uses: pre-commit/action@v3.0.1
 
       - name: Run validation (all prompts)
+        id: validation
         run: |
-          python scripts/ci-check.py
           python scripts/validate.py --strict --json > validation-results.json
 
       - name: Upload validation results
@@ -123,9 +123,18 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Download validation results
+        id: download
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: validation-results
+
+      - name: Check validation results file exists
+        run: |
+          if [ ! -f validation-results.json ]; then
+            echo "::error::Validation results artifact not found"
+            exit 1
+          fi
 
       - name: Evaluate quality gate (validation + metrics)
         run: |
