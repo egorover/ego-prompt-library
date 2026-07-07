@@ -53,20 +53,23 @@ jobs:
       - name: Run validation (all prompts)
         id: validation
         run: |
-          set -e
-          python scripts/validate.py --strict --json > validation-results.json || {
+          python scripts/validate.py --strict --json > validation-results.json 2>&1
+          if [ $? -ne 0 ]; then
             echo "::error::Validation failed"
-            cat validation-results.json || true
+            if [ -f validation-results.json ] && [ -s validation-results.json ]; then
+              cat validation-results.json
+            fi
             exit 1
-          }
+          fi
 
       - name: Upload validation results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: success() || failure()
         with:
           name: validation-results
           path: validation-results.json
           retention-days: 30
+          if-no-files-found: warn
 
       - name: Human-readable output
         run: |
@@ -111,7 +114,7 @@ jobs:
     name: Quality Gate
     runs-on: ubuntu-latest
     needs: [validate]
-    if: always()
+    if: always() && needs.validate.result == 'success'
     timeout-minutes: 5
 
     steps:
@@ -129,10 +132,10 @@ jobs:
 
       - name: Download validation results
         id: download
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: validation-results
+          path: .
 
       - name: Check validation results file exists
         run: |
@@ -156,7 +159,7 @@ jobs:
           echo "✅ Quality gate PASSED"
 
       - name: Comment on PR (if applicable)
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && success()
         uses: actions/github-script@v7
         with:
           script: |
