@@ -3,7 +3,7 @@
 > Production-ready фреймворк для разработки, тестирования и управления AI prompt-ролями.  
 > Промпты управляются как код: code review, версионирование, метрики, CI/CD.
 
-**Дата актуализации:** 2026-07-07 12:00  
+**Дата актуализации:** 2026-07-07 06:07  
 **Версия:** 1.1.0  
 **Статус:** ✅ Active | **Maturity Level:** 3.5 (Library Asset)
 
@@ -15,7 +15,7 @@
 ![Version](https://img.shields.io/badge/Version-1.1.0-blue)
 ![CI](https://img.shields.io/badge/CI-Validate%20✅-green)
 ![Tests](https://img.shields.io/badge/Tests-132%20passed%2C%204%20skipped-brightgreen)
-![Coverage](https://img.shields.io/badge/Coverage-69.12%25-ff69b4)
+![Coverage](https://img.shields.io/badge/Coverage-69.14%25-ff69b4)
 
 ## 🎯 Что это такое
 
@@ -64,7 +64,7 @@
 | **Строк кода** | 8 696 |
 | **Python файлов** | 25 (scripts) + 15 (tests) |
 | **Тестов** | 136 (132 passed, 4 skipped) |
-| **Покрытие кода** | 69.12% |
+| **Покрытие кода** | 69.14% |
 | **Промпт-ролей** | 2 |
 | **CI pass rate** | 100% |
 | **Overall Score** | 8.30/10 |
@@ -80,7 +80,7 @@ ego-prompt-library/
 ├── .pre-commit-config.yaml    # pre-commit hooks (ruff, mypy, codespell)
 ├── LICENSE
 ├── pyproject.toml             # PEP 621 конфигурация
-├── AUDIT_REPORT.md            # Аудит проекта (2026-07-05)
+├── AUDIT_REPORT.md            # Аудит проекта (2026-07-07)
 ├── TEMPLATE_NEW_ROLE.md       # Шаблон добавления новой роли
 ├── .coverage                  # Данные покрытия кода
 ├── .venv/                     # Виртуальное окружение (изолировано)
@@ -294,7 +294,7 @@ codespell scripts/ tests/
 | [governance.md](docs/governance.md) | Управление: roles, PR, review, metrics, deprecation |
 | [metrics.md](docs/metrics.md) | Система метрик и dashboards |
 | [INDEX.md](docs/INDEX.md) | Индекс документации |
-| [AUDIT_REPORT.md](AUDIT_REPORT.md) | Аудит проекта (2026-07-05) |
+| [AUDIT_REPORT.md](AUDIT_REPORT.md) | Аудит проекта (2026-07-07) |
 | [TEMPLATE_NEW_ROLE.md](TEMPLATE_NEW_ROLE.md) | Шаблон добавления новой роли |
 | [scripts/README.md](scripts/README.md) | Описание скриптов |
 
@@ -383,5 +383,5 @@ pre-commit install
 
 ---
 
-**Актуализировано:** 2026-07-07 12:00  
+**Актуализировано:** 2026-07-07 06:07  
 **Следующая актуализация:** 2026-10-07 (Q3 2026)
