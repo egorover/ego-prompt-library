@@ -278,6 +278,7 @@ def main() -> None:
             "results": [r.to_dict() for r in results],
         }
         print(json.dumps(output, indent=2, ensure_ascii=False))
+        sys.exit(1 if output["status"] != "pass" else 0)
     else:
         total = len(results)
         passed = sum(1 for r in results if r.is_valid)

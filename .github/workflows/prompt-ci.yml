@@ -53,7 +53,12 @@ jobs:
       - name: Run validation (all prompts)
         id: validation
         run: |
-          python scripts/validate.py --strict --json > validation-results.json
+          set -e
+          python scripts/validate.py --strict --json > validation-results.json || {
+            echo "::error::Validation failed"
+            cat validation-results.json || true
+            exit 1
+          }
 
       - name: Upload validation results
         uses: actions/upload-artifact@v4
