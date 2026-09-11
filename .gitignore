@@ -32,9 +32,11 @@ venv/
 Thumbs.db
 
 # Reports (generated)
-report.md
-dashboard.html
-report.json
+# # Закомментил из-за сбой выполнения автоматического сценария (Workflow) в GitHub Actions для репозитория egorover/ego-prompt-library
+# # По рекомендации G.Chr
+# # report.md
+# # dashboard.html
+# # report.json
 metrics-data.json
 validation-results.json
 
