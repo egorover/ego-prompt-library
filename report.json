@@ -1,30 +1,30 @@
 {
-  "generated_at": "2026-06-23T08:49:27.067125",
+  "generated_at": "2026-11-19T19:30:38.122667",
   "prompts": [
     {
       "name": "python-architect",
-      "usage_count": 3,
+      "usage_count": 4,
       "test_pass_rate": 100.0,
       "latency_p50": 5.0,
       "latency_p95": 8.0,
       "latency_p99": 12.0,
       "quality_avg": 4.6,
       "quality_count": 3,
-      "changes_this_month": 2,
+      "changes_this_month": 0,
       "open_issues": 0,
       "version": "v1.1.0",
       "status": "validated"
     },
     {
       "name": "python-dev",
-      "usage_count": 2,
+      "usage_count": 8,
       "test_pass_rate": 100.0,
       "latency_p50": 3.0,
       "latency_p95": 7.7,
       "latency_p99": 9.9,
       "quality_avg": 4.8,
       "quality_count": 5,
-      "changes_this_month": 1,
+      "changes_this_month": 0,
       "open_issues": 0,
       "version": "v1.0.0",
       "status": "validated"
